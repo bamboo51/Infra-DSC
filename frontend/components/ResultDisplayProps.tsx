@@ -1,6 +1,6 @@
 interface ResultDisplayProps {
 	imagePreview: string;
-	canvasRef: React.RefObject<HTMLCanvasElement>;
+	canvasRef: React.RefObject<HTMLCanvasElement | null>;
 	error: string;
 }
 
