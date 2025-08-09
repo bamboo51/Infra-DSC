@@ -18,3 +18,8 @@ export interface ApiResponse {
   detection: Detection[];
   segmentation: Segmentation[];
 }
+
+export interface SelectedFile {
+  file: File;
+  preview: string;
+}

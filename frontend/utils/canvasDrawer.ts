@@ -13,7 +13,7 @@ export const CanvasDrawer = {
   async drawImage(ctx: CanvasRenderingContext2D, imagePreview: string): Promise<HTMLImageElement> {
     const img = new Image();
     img.src = imagePreview;
-    await new Promise((resolve) => { img.onload = resolve; });
+    await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; });
 
     const canvas = ctx.canvas;
     canvas.width = img.width;

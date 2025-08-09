@@ -1,101 +1,129 @@
 import { ApiService } from "@/services/mlService";
-import { ApiResponse } from "@/types/api";
+import { ApiResponse, SelectedFile } from "@/types/api";
 import { CanvasDrawer } from "@/utils/canvasDrawer";
 import { useCallback, useEffect, useRef, useState } from "react"
 
 export const crackDetection = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [results, setResults] = useState<ApiResponse | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
+  const [activeFileIndex, setActiveFileIndex] = useState<number | null>(null);
+  const [results, setResults] = useState<Record<number, ApiResponse>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState("");
-  const [imagePreview, setImagePreview] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const activeFile = activeFileIndex !== null ? selectedFiles[activeFileIndex] : null;
 
-  /**
-   * Handle file input changes.
-   * @param event The change event from the file input.
-   */
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0] ?? null;
-    setFile(selectedFile);
-    setResults(null);
-    setError("");
+  const processFiles = (files: FileList | null) => {
+    if (files && files.length > 0) {
+      setError("");
+      const filesArray = Array.from(files).filter(file => file.type.startsWith("image/"));
 
-    if (selectedFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const resultStr = reader.result as string;
-        setImagePreview(resultStr);
-        const canvas = canvasRef.current;
-        if (canvas) {
-          const ctx = canvas.getContext("2d");
-          if (ctx) {
-            CanvasDrawer.drawImage(ctx, resultStr);
-          }
+      if (filesArray.length === 0) {
+        setError("No valid image files found.");
+        return;
+      }
+
+      const filePromises = filesArray.map(file => {
+        return new Promise<SelectedFile>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve({ file, preview: reader.result as string });
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(filePromises).then(newFiles => {
+        const updatedFiles = [...selectedFiles, ...newFiles];
+        setSelectedFiles(updatedFiles);
+        if (activeFileIndex === null && updatedFiles.length > 0) {
+          setActiveFileIndex(0);
         }
-      };
-      reader.readAsDataURL(selectedFile);
-    } else {
-      setImagePreview("");
+      });
     }
   };
+
 
   /**
    * Draw the results on the canvas.
    */
-  const drawResults = useCallback(async (data: ApiResponse) => {
-    if (!imagePreview || !canvasRef.current) return;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+  const drawResults = useCallback(async (data: ApiResponse, imagePreview: string) => {
+    if (!canvasRef.current) return;
+    const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
-
     await CanvasDrawer.drawImage(ctx, imagePreview);
     await CanvasDrawer.drawSegmentationMask(ctx, data.segmentation);
-    await CanvasDrawer.drawDetectionBoxes(ctx, data.detection);
-  }, [imagePreview]);
+    CanvasDrawer.drawDetectionBoxes(ctx, data.detection);
+  }, []);
 
-  /**
-   * Handle the prediction process.
-   * @returns {Promise<void>}
-   */
-  const handlePredict = async () => {
-    if (!file) {
-      setError("Please select an image file.");
+  const handlePredictAll = async () => {
+    if (selectedFiles.length === 0) {
+      setError("No images selected for prediction.");
       return;
     }
     setIsLoading(true);
     setError("");
-    setResults(null);
 
-    try {
-      const responseData = await ApiService.predict(file);
-      setResults(responseData);
-      await drawResults(responseData);
-    } catch (err) {
-      setError("An error occurred while processing the image.");
-      console.log(err);
-    } finally {
+    const predictionsToRun = selectedFiles
+      .map((file, index) => ({ file, index }))
+      .filter(({ index }) => !results[index]);
+
+    if (predictionsToRun.length === 0) {
       setIsLoading(false);
+      return;
     }
-  };
+
+    const promises = predictionsToRun.map(({ file, index }) =>
+      ApiService.predict(file.file).then(response => ({ index, response }))
+    );
+
+    const settledResults = await Promise.allSettled(promises);
+
+    const newResults: Record<number, ApiResponse> = {};
+    settledResults.forEach(result => {
+      if (result.status === 'fulfilled') {
+        newResults[result.value.index] = result.value.response;
+      } else {
+        console.error("A prediction failed:", result.reason);
+        setError("One or more predictions failed. Check the console.");
+      }
+    });
+
+    setResults(prev => ({ ...prev, ...newResults }));
+    setIsLoading(false);
+  }
 
   useEffect(() => {
-    if (imagePreview && canvasRef.current) {
-      const ctx = canvasRef.current.getContext("2d");
-      if (ctx) {
-        CanvasDrawer.drawImage(ctx, imagePreview);
-      }
-    }
-  }, [imagePreview]);
+    const drawCanvas = async () => {
+      if (!activeFile || !canvasRef.current) return;
 
-  return {
-    file,
+      const ctx = canvasRef.current.getContext('2d');
+      if (!ctx) return;
+
+      const resultForActiveFile = activeFileIndex !== null ? results[activeFileIndex] : null;
+
+      await CanvasDrawer.drawImage(ctx, activeFile.preview);
+
+      if (resultForActiveFile) {
+        await CanvasDrawer.drawSegmentationMask(ctx, resultForActiveFile.segmentation);
+        CanvasDrawer.drawDetectionBoxes(ctx, resultForActiveFile.detection);
+      }
+    };
+
+    drawCanvas();
+  }, [activeFile, activeFileIndex, results]);
+
+return {
+    selectedFiles,
+    activeFileIndex,
+    setActiveFileIndex,
     results,
     isLoading,
+    isDragging,
+    setIsDragging,
     error,
-    imagePreview,
     canvasRef,
-    handleFileChange,
-    handlePredict,
+    processFiles,
+    handlePredictAll,
   };
 }
