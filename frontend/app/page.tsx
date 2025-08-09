@@ -1,20 +1,27 @@
 "use client";
 
 import { crackDetection } from "@/hooks/crackDetection";
-import { FileInput } from "@/components/FileInputProps";
 import { PredictButton } from "@/components/PredictButtonProps";
 import { ResultDisplay } from "@/components/ResultDisplayProps";
+import { Dropzone } from "@/components/DropZone";
+import { ImageGallery } from "@/components/ImageGallery";
 
 export default function App(){
   const {
-    file,
+    selectedFiles,
+    activeFileIndex,
+    setActiveFileIndex,
+    results,
     isLoading,
+    isDragging,
+    setIsDragging,
     error,
-    imagePreview,
     canvasRef,
-    handleFileChange,
-    handlePredict,
+    processFiles,
+    handlePredictAll,
   } = crackDetection();
+
+const allPredicted = selectedFiles.length > 0 && Object.keys(results).length === selectedFiles.length;
 
   return (
     <main className="flex min-h-screen flex-col items-center p-6 sm:p-12 bg-gray-900 text-white font-sans">
@@ -26,13 +33,19 @@ export default function App(){
         </header>
 
         <section className="bg-gray-800 p-6 sm:p-8 rounded-xl shadow-2xl flex flex-col items-center">
-          <FileInput onChange={handleFileChange} disabled={isLoading} />
-          <PredictButton onClick={handlePredict} isLoading={isLoading} disabled={!file} />
+          <Dropzone 
+            processFiles={processFiles}
+            isDragging={isDragging}
+            setIsDragging={setIsDragging}
+            disabled={isLoading}
+          />
+          <PredictButton onClick={handlePredictAll} isLoading={isLoading} disabled={activeFileIndex === null || allPredicted} />
+          <ImageGallery files={selectedFiles} results={results} activeIndex={activeFileIndex} onSelect={setActiveFileIndex} />
         </section>
 
         <ResultDisplay
-          imagePreview={imagePreview}
           canvasRef={canvasRef}
+          hasActiveImage={activeFileIndex !== null}
           error={error}
         />
       </div>
