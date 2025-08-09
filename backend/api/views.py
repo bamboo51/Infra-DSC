@@ -11,6 +11,7 @@ import numpy as np
 import io
 import cv2
 import base64
+from collections import defaultdict
 
 DETECT_MODEL_PATH = os.path.join(settings.BASE_DIR, "api", "weights", "detect.pt")
 SEGMENT_MODEL_PATH = os.path.join(settings.BASE_DIR, "api", "weights", "segment.pt")
@@ -41,38 +42,33 @@ class YOLOPredictionView(APIView):
     def segmentation(self, model=segment_model, image=None):
         SEGMENTATION_COLORS = ['#92CC17', '#3DDB86', '#1A9334', '#00D4BB', '#2C99A8']
         results = model.predict(image)[0]
-        masks = []
+
+        grouped_results = defaultdict(lambda: {"masks": [], "confidences": []})
         if results.masks is not None:
             for mask, cls, conf in zip(results.masks.data.cpu().numpy(), results.boxes.cls, results.boxes.conf):
-                # Resize mask to original image size
-                mask_resized = cv2.resize(mask, (image.width, image.height))
+                grouped_results[int(cls)]["masks"].append(mask)
+                grouped_results[int(cls)]["confidences"].append(conf)
 
-                # Create empty RGBA image for mask overlay
-                mask_img = np.zeros((image.height, image.width, 4), dtype=np.uint8)
+        masks = []
+        for cls, mask_list in grouped_results.items():
+            resized_masks = [cv2.resize(m, (image.width, image.height)) > 0.5 for m in mask_list["masks"]]
+            combined_mask = np.logical_or.reduce(resized_masks)
+            mask_img = np.zeros((image.height, image.width, 4), dtype=np.uint8)
+            color_hex = SEGMENTATION_COLORS[cls % len(SEGMENTATION_COLORS)]
+            r,g,b = int(color_hex[1:3], 16), int(color_hex[3:5], 16), int(color_hex[5:7], 16)
+            alpha = 128
 
-                # Extract color and alpha
-                color = SEGMENTATION_COLORS[int(cls) % len(SEGMENTATION_COLORS)]
-                r, g, b = int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16)
-                alpha = 128  # semi-transparent
+            mask_img[combined_mask] = [r, g, b, alpha]
 
-                # Apply color only where mask > 0.5 (threshold)
-                mask_bool = mask_resized > 0.5
-                mask_img[mask_bool, 0] = r
-                mask_img[mask_bool, 1] = g
-                mask_img[mask_bool, 2] = b
-                mask_img[mask_bool, 3] = alpha
-
-                # Encode to PNG and base64
-                _, buffer = cv2.imencode('.png', mask_img)
-                mask_base64 = base64.b64encode(buffer).decode('utf-8')
-                mask_data_uri = f"data:image/png;base64,{mask_base64}"
-
-                masks.append({
-                    "mask": mask_data_uri,
-                    "class_id": int(cls),
-                    "confidence": float(conf),
-                    "class_name": segment_model.names[int(cls)]
-                })
+            _, buffer = cv2.imencode('.png', mask_img)
+            mask_base64 = base64.b64encode(buffer).decode('utf-8')
+            mask_data_uri = f"data:image/png;base64,{mask_base64}"
+            masks.append({
+                "mask": mask_data_uri,
+                "class_id": int(cls),
+                "confidence": float(np.mean(mask_list["confidences"])),
+                "class_name": segment_model.names[int(cls)]
+            })
         return masks
 
     def post(self, request, *args, **kwargs):
