@@ -7,6 +7,7 @@ export const ApiService = {
   async predict(imageFile: File): Promise<ApiResponse>{
     const formData = new FormData();
     formData.append("image", imageFile);
+    console.log(API_URL);
 
     const response = await axios.post<ApiResponse>(
       API_URL,
