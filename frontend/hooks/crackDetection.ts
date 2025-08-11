@@ -2,6 +2,8 @@ import { ApiService } from "@/services/mlService";
 import { ApiResponse, SelectedFile } from "@/types/api";
 import { CanvasDrawer } from "@/utils/canvasDrawer";
 import { useCallback, useEffect, useRef, useState } from "react"
+import EXIF from "exif-js";
+import { get } from "http";
 
 export const crackDetection = () => {
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
@@ -13,6 +15,30 @@ export const crackDetection = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const activeFile = activeFileIndex !== null ? selectedFiles[activeFileIndex] : null;
 
+  const getExifData = (file: File): Promise<Coords | undefined> => {
+    return new Promise((resolve) => {
+      EXIF.getData(file as any, function(this: any){
+        const latitude = EXIF.getTag(this, "GPSLatitude");
+        const longitude = EXIF.getTag(this, "GPSLongitude");
+
+        if(Array.isArray(latitude) && Array.isArray(longitude)){
+          const latRef = EXIF.getTag(this, "GPSLatitudeRef") || "N";
+          const lonRef = EXIF.getTag(this, "GPSLongitudeRef") || "E";
+
+          const latDec = latitude[0] + latitude[1] / 60 + latitude[2] / 3600;
+          const lonDec = longitude[0] + longitude[1] / 60 + longitude[2] / 3600;
+
+          resolve({
+            latitude: latRef === "N" ? latDec : -latDec,
+            longitude: lonRef === "E" ? lonDec : -lonDec,
+          });
+        } else {
+          resolve(undefined);
+        }
+      });
+    });
+  }
+
   const processFiles = (files: FileList | null) => {
     if (files && files.length > 0) {
       setError("");
@@ -23,11 +49,13 @@ export const crackDetection = () => {
         return;
       }
 
-      const filePromises = filesArray.map(file => {
+      const filePromises = filesArray.map(async file => {
+        const coords = await getExifData(file);
+        console.log(coords);
         return new Promise<SelectedFile>((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            resolve({ file, preview: reader.result as string });
+            resolve({ file, preview: reader.result as string, coords });
           };
           reader.readAsDataURL(file);
         });
@@ -47,15 +75,6 @@ export const crackDetection = () => {
   /**
    * Draw the results on the canvas.
    */
-  const drawResults = useCallback(async (data: ApiResponse, imagePreview: string) => {
-    if (!canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-    if (!ctx) return;
-    await CanvasDrawer.drawImage(ctx, imagePreview);
-    await CanvasDrawer.drawSegmentationMask(ctx, data.segmentation);
-    CanvasDrawer.drawDetectionBoxes(ctx, data.detection);
-  }, []);
-
   const handlePredictAll = async () => {
     if (selectedFiles.length === 0) {
       setError("No images selected for prediction.");

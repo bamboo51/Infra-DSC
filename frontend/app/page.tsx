@@ -5,6 +5,13 @@ import { PredictButton } from "@/components/PredictButtonProps";
 import { ResultDisplay } from "@/components/ResultDisplayProps";
 import { Dropzone } from "@/components/DropZone";
 import { ImageGallery } from "@/components/ImageGallery";
+import { MapDisplayProps } from "@/components/Map";
+import dynamic from "next/dynamic";
+
+const DynamicMapDisplay = dynamic<MapDisplayProps>(
+  () => import("@/components/Map").then(mod => mod.MapDisplay),
+  { ssr: false, loading: () => <p className="text-center mt-8">Loading map...</p> }
+);
 
 export default function App(){
   const {
@@ -48,6 +55,8 @@ const allPredicted = selectedFiles.length > 0 && Object.keys(results).length ===
           hasActiveImage={activeFileIndex !== null}
           error={error}
         />
+
+        <DynamicMapDisplay files={selectedFiles} activeIndex={activeFileIndex} />
       </div>
     </main>
   );

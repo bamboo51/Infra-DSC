@@ -22,4 +22,5 @@ export interface ApiResponse {
 export interface SelectedFile {
   file: File;
   preview: string;
+  coords?: Coords;
 }
