@@ -85,6 +85,8 @@ class YOLOPredictionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         image_file = request.data["image"]
+        latitude = request.data["latitude"]
+        longitude = request.data["longitude"]
 
         # read image into memory for hashing and processing
         try:
@@ -128,7 +130,7 @@ class YOLOPredictionView(APIView):
         # save photo to database
         photo_serializer = PhotoSerializer(data={"image": image_file})
         if photo_serializer.is_valid():
-            photo_instance = photo_serializer.save(image_hash=hash_value)
+            photo_instance = photo_serializer.save(image_hash=hash_value, latitude=latitude, longitude=longitude)
         else:
             return Response(
                 {"error": "Failed to save photo."},
