@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import React, { useState } from "react";
 
 // You can use any icon library or SVG for the icons
@@ -86,10 +87,10 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0">
-            <a href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <CustomLogo />
               <span className="text-2xl font-bold text-white">Infra-DSC</span>
-            </a>
+            </Link>
           </div>
 
           <div className="hidden md:block">
