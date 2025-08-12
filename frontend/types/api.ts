@@ -1,4 +1,5 @@
 // types for detection and segmentation
+import { Coords } from "@/types/coords";
 
 export interface Detection {
   box: [number, number, number, number];
