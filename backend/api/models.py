@@ -6,6 +6,7 @@ class Photo(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+    image_hash = models.CharField(max_length=64, unique=True, db_index=True, null=True)
 
     def __str__(self):
         return f"Photo {self.id} - {self.image.name}"

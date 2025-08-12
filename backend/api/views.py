@@ -12,7 +12,9 @@ import io
 import cv2
 import base64
 from collections import defaultdict
+import imagehash
 
+from .models import Photo
 from .serializer import PhotoSerializer, DetectionSerializer, SegmentationSerializer
 
 DETECT_MODEL_PATH = os.path.join(settings.BASE_DIR, "api", "weights", "detect.pt")
@@ -84,28 +86,58 @@ class YOLOPredictionView(APIView):
             )
         image_file = request.data["image"]
 
+        # read image into memory for hashing and processing
+        try:
+            image_data = image_file.read()
+            pil_image = Image.open(io.BytesIO(image_data))
+        except Exception as e:
+            return Response({"error": f"Invalid image file: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # calculate image hash
+        try:
+            hash_value = str(imagehash.phash(pil_image))
+        except Exception as e:
+            return Response({"error": f"Failed to calculate image hash: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        existing_photo = Photo.objects.filter(image_hash=hash_value).first()
+        if existing_photo:
+            detection_results = [
+                {
+                    "box": [d.box_x1, d.box_y1, d.box_x2, d.box_y2],
+                    "class_name": d.class_name,
+                    "confidence": d.confidence
+                } for d in existing_photo.detections.all()
+            ]
+            segmentation_results = [
+                {
+                    "mask": s.mask_uri,
+                    "confidence": s.confidence,
+                    "class_name": s.class_name
+                } for s in existing_photo.segmentations.all()
+            ]
+            print("Found existing photo:", existing_photo.id)
+
+            return Response({
+                "detection": detection_results,
+                "segmentation": segmentation_results,
+                #"photo_id": existing_photo.id
+            }, status=status.HTTP_200_OK)
+
+        image_file.seek(0)
+
         # save photo to database
         photo_serializer = PhotoSerializer(data={"image": image_file})
         if photo_serializer.is_valid():
-            photo_instance = photo_serializer.save()
+            photo_instance = photo_serializer.save(image_hash=hash_value)
         else:
             return Response(
                 {"error": "Failed to save photo."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # read the image file
-        try:
-            image = Image.open(image_file)
-        except Exception as e:
-            return Response(
-                {"error": f"Invalid image file: {str(e)}"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
         # perform inference
-        detection_results = self.detection(image=image, name=image_file.name)
-        segmentation_results = self.segmentation(image=image, name=image_file.name)
+        detection_results = self.detection(image=pil_image, name=image_file.name)
+        segmentation_results = self.segmentation(image=pil_image, name=image_file.name)
 
         # save detections to database
         for det in detection_results:
@@ -143,4 +175,4 @@ class YOLOPredictionView(APIView):
             "detection": detection_results,
             "segmentation": segmentation_results,
             #"photo_id": photo_instance.id # further id for user login and rewards
-        }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_201_CREATED)
