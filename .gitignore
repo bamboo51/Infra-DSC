@@ -269,4 +269,4 @@ lerna-debug.log
 Thumbs.db
 
 # photo database
-/backend/photos
+/backend/media/*

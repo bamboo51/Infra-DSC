@@ -9,8 +9,6 @@ on:
 jobs:
   backend-ci:
     runs-on: ubuntu-latest
-    env:
-      SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -24,6 +22,8 @@ jobs:
         run: |
           pip install -r backend/requirements.txt
       - name: Run backend tests
+        env:
+          SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         run: |
           cd backend
           python manage.py test

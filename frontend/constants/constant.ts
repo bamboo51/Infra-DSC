@@ -7,4 +7,4 @@ export const DETECTION_COLORS = new Map<string, string>([
   ["pothole", "#48F90A"]
 ]);
 
-export const API_URL = process.env.NEXT_PUBLIC_DJANGO_URL || "http://localhost:8000/api/predict/";
+export const API_URL = process.env.NEXT_PUBLIC_DJANGO_URL || "http://localhost:8000/api";

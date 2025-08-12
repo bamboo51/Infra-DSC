@@ -139,3 +139,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://192.168.253.124:3000",
 ]
+
+SITE_URL = "http://192.168.253.124:8000"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

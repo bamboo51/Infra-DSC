@@ -3,7 +3,7 @@
 import L from 'leaflet'; 
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import React, { useEffect, useRef, useMemo, RefObject } from 'react';
-import { SelectedFile } from '@/types/api';
+import { SelectedFile, PhotoWithResults } from '@/types/api';
 import 'leaflet/dist/leaflet.css';
 
 // eslint-disable-next-line
@@ -14,13 +14,13 @@ L.Icon.Default.mergeOptions({
     iconRetinaUrl: '/leaflet/marker-icon-2x.png',
     shadowUrl: '/leaflet/marker-shadow.png',
 })
-
+type MapFile = Partial<PhotoWithResults> & Partial<SelectedFile>;
 export interface MapDisplayProps {
-    files: SelectedFile[];
+    files: MapFile[];
     activeIndex: number | null;
 }
 
-const useMapLogic = (files: SelectedFile[]) => {
+const useMapLogic = (files: MapFile[]) => {
     const filesWithCoords = useMemo(() => 
         files.map((f, i) => ({...f, index: i})).filter(f => f.coords), 
     [files]);
@@ -29,7 +29,7 @@ const useMapLogic = (files: SelectedFile[]) => {
 };
 
 interface MapEventsProps {
-    filesWithCoords: (SelectedFile & { index: number })[];
+    filesWithCoords: (MapFile & { index: number })[];
     activeIndex: number | null;
     markerRefs: RefObject<(L.Marker | null)[]>;
 }
@@ -84,20 +84,24 @@ export const MapDisplay: React.FC<MapDisplayProps> = ({ files, activeIndex }) =>
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                
-                {filesWithCoords.map(({ coords, preview, index }) => (
-                    coords && (
-                        <Marker 
-                            key={index} 
-                            position={[coords.latitude, coords.longitude]}
-                            ref={(el) => { markerRefs.current[index] = el; }}
+
+                {filesWithCoords.map((file) => {
+                    if (file.coords === null) return null; // Skip if no coordinates
+                    return (
+                        <Marker
+                            key={file.id ?? file.file?.name}
+                            position={[
+                                file.coords?.latitude ?? 0,
+                                file.coords?.longitude ?? 0
+                            ]}
+                            ref={(el) => { if (file.index !== undefined) markerRefs.current[file.index] = el; }}
                         >
                             <Popup>
-                                <img src={preview} alt="preview" className="w-24 h-24 object-cover"/>
+                                <img src={file.image || file.preview} alt="preview" className="w-24 h-24 object-cover"/>
                             </Popup>
                         </Marker>
-                    )
-                ))}
+                    );
+                })}
 
                 <MapEvents 
                     filesWithCoords={filesWithCoords}

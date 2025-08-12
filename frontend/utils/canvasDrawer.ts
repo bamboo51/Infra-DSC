@@ -18,7 +18,7 @@ export const CanvasDrawer = {
     const canvas = ctx.canvas;
     canvas.width = img.width;
     canvas.height = img.height;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
     return img;
   },
@@ -30,9 +30,13 @@ export const CanvasDrawer = {
    */
   async drawSegmentationMask(ctx: CanvasRenderingContext2D, segmentation: Segmentation[]): Promise<void> {
     for (const seg of segmentation) {
+      if (!seg.mask_uri) {
+        console.warn("Skipping segmentation for class because its mask is missing:", seg.class_name);
+        continue; // Skip to the next item in the loop
+      }
       const maskImage = new Image();
-      maskImage.src = seg.mask;
-      await new Promise((resolve) => { maskImage.onload = resolve; });
+      maskImage.src = seg.mask_uri;
+      await new Promise((resolve, reject) => { maskImage.onload = resolve; maskImage.onerror = reject;});
       ctx.drawImage(maskImage, 0, 0, ctx.canvas.width, ctx.canvas.height);
     }
   },
@@ -43,13 +47,14 @@ export const CanvasDrawer = {
    * @param detections The detection data to be drawn
    */
   drawDetectionBoxes(ctx: CanvasRenderingContext2D, detections: Detection[]): void {
+
     const canvas = ctx.canvas;
     const baseSize = Math.min(canvas.width, canvas.height);
     const fontSize = Math.max(20, Math.round(baseSize * 0.03));
     const lineWidth = Math.max(2, Math.round(baseSize * 0.008));
 
     detections.forEach(det => {
-      const [x1, y1, x2, y2] = det.box;
+      const [x1, y1, x2, y2] = [det.box_x1, det.box_y1, det.box_x2, det.box_y2];
       const label = `${det.class_name} (${(det.confidence * 100).toFixed(2)}%)`;
       const color =  DETECTION_COLORS.get(det.class_name) || "FFFFFF";
 

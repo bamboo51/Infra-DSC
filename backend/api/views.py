@@ -13,9 +13,10 @@ import cv2
 import base64
 from collections import defaultdict
 import imagehash
+import json
 
 from .models import Photo
-from .serializer import PhotoSerializer, DetectionSerializer, SegmentationSerializer
+from .serializer import PhotoSerializer, DetectionSerializer, SegmentationSerializer, AllResultsPhotoSerializer
 
 DETECT_MODEL_PATH = os.path.join(settings.BASE_DIR, "api", "weights", "detect.pt")
 SEGMENT_MODEL_PATH = os.path.join(settings.BASE_DIR, "api", "weights", "segment.pt")
@@ -35,7 +36,10 @@ class YOLOPredictionView(APIView):
             for i in range(len(boxes)):
                 box = boxes[i]
                 prediction = {
-                    "box": [float(coord) for coord in box.xyxy[0]],
+                    "box_x1": int(box.xyxy[0][0]),
+                    "box_y1": int(box.xyxy[0][1]),
+                    "box_x2": int(box.xyxy[0][2]),
+                    "box_y2": int(box.xyxy[0][3]),
                     "confidence": float(box.conf[0]),
                     "class_id": int(box.cls[0]),
                     "class_name": detect_model.names[int(box.cls[0])]
@@ -70,7 +74,7 @@ class YOLOPredictionView(APIView):
             mask_base64 = base64.b64encode(buffer).decode('utf-8')
             mask_data_uri = f"data:image/png;base64,{mask_base64}"
             masks.append({
-                "mask": mask_data_uri,
+                "mask_uri": mask_data_uri,
                 "class_id": int(cls),
                 "confidence": float(np.mean(mask_list["confidences"])),
                 "class_name": segment_model.names[int(cls)]
@@ -105,14 +109,17 @@ class YOLOPredictionView(APIView):
         if existing_photo:
             detection_results = [
                 {
-                    "box": [d.box_x1, d.box_y1, d.box_x2, d.box_y2],
+                    "box_x1": d.box_x1,
+                    "box_y1": d.box_y1,
+                    "box_x2": d.box_x2,
+                    "box_y2": d.box_y2,
                     "class_name": d.class_name,
                     "confidence": d.confidence
                 } for d in existing_photo.detections.all()
             ]
             segmentation_results = [
                 {
-                    "mask": s.mask_uri,
+                    "mask_uri": s.mask_uri,
                     "confidence": s.confidence,
                     "class_name": s.class_name
                 } for s in existing_photo.segmentations.all()
@@ -143,15 +150,14 @@ class YOLOPredictionView(APIView):
 
         # save detections to database
         for det in detection_results:
-            box = det['box']
             detection_data = {
                 "photo": photo_instance.id,
                 "class_name": det["class_name"],
                 "confidence": det["confidence"],
-                "box_x1": box[0],
-                "box_y1": box[1],
-                "box_x2": box[2],
-                "box_y2": box[3],
+                "box_x1": det["box_x1"],
+                "box_y1": det["box_y1"],
+                "box_x2": det["box_x2"],
+                "box_y2": det["box_y2"],
             }
             detection_serializer = DetectionSerializer(data=detection_data)
             if detection_serializer.is_valid():
@@ -163,7 +169,7 @@ class YOLOPredictionView(APIView):
         for seg in segmentation_results:
             segmentation_data = {
                 "photo": photo_instance.id,
-                "mask_uri": seg["mask"],
+                "mask_uri": seg["mask_uri"],
                 "class_name": seg["class_name"],
                 "confidence": seg["confidence"]
             }
@@ -178,3 +184,20 @@ class YOLOPredictionView(APIView):
             "segmentation": segmentation_results,
             #"photo_id": photo_instance.id # further id for user login and rewards
         }, status=status.HTTP_201_CREATED)
+
+class AllResultsView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            all_photos = Photo.objects.prefetch_related(
+                'detections', 
+                'segmentations'
+            ).all().order_by("-uploaded_at")
+            print(f"--- [2] Found {len(all_photos)} photos. Starting serialization...")
+            serializer = AllResultsPhotoSerializer(all_photos, many=True, context={'request': request})
+            print("--- [3] Serialization complete. Sending response.")
+            with open("test.txt", "w") as f:
+                f.write(json.dumps(serializer.data, indent=2))
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
