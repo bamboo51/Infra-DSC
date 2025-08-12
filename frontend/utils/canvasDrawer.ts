@@ -51,7 +51,7 @@ export const CanvasDrawer = {
     detections.forEach(det => {
       const [x1, y1, x2, y2] = det.box;
       const label = `${det.class_name} (${(det.confidence * 100).toFixed(2)}%)`;
-      const color = DETECTION_COLORS[det.class_id % DETECTION_COLORS.length];
+      const color =  DETECTION_COLORS.get(det.class_name) || "FFFFFF";
 
       ctx.strokeStyle = color;
       ctx.lineWidth = lineWidth;

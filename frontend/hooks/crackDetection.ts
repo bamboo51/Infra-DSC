@@ -1,9 +1,9 @@
 import { ApiService } from "@/services/mlService";
 import { ApiResponse, SelectedFile } from "@/types/api";
 import { CanvasDrawer } from "@/utils/canvasDrawer";
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import EXIF from "exif-js";
-import { get } from "http";
+import { Coords } from "@/types/coords";
 
 export const crackDetection = () => {
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
@@ -93,7 +93,7 @@ export const crackDetection = () => {
     }
 
     const promises = predictionsToRun.map(({ file, index }) =>
-      ApiService.predict(file.file).then(response => ({ index, response }))
+      ApiService.predict(file.file, file.coords).then(response => ({ index, response }))
     );
 
     const settledResults = await Promise.allSettled(promises);
