@@ -56,7 +56,7 @@ const allPredicted = selectedFiles.length > 0 && Object.keys(results).length ===
           error={error}
         />
 
-        <DynamicMapDisplay files={selectedFiles} activeIndex={activeFileIndex} />
+        <DynamicMapDisplay files={selectedFiles} activeIndex={activeFileIndex} onActiveIndexChange={setActiveFileIndex} />
       </div>
     </main>
   );

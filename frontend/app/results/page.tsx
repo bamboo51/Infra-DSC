@@ -95,6 +95,7 @@ export default function ResultsPage() {
                 <DynamicMapDisplay
                   files={allFiles}
                   activeIndex={activeFileIndex}
+                  onActiveIndexChange={setActiveFileIndex}
                 />
               </div>
             </>

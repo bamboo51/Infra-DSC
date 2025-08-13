@@ -18,6 +18,7 @@ type MapFile = Partial<PhotoWithResults> & Partial<SelectedFile>;
 export interface MapDisplayProps {
     files: MapFile[];
     activeIndex: number | null;
+    onActiveIndexChange: (index: number) => void;
 }
 
 const useMapLogic = (files: MapFile[]) => {
@@ -37,18 +38,15 @@ interface MapEventsProps {
 const MapEvents: React.FC<MapEventsProps> = ({ filesWithCoords, activeIndex, markerRefs }) => {
     const map = useMap();
 
-    // On initial load, fit the map to show all markers.
     useEffect(() => {
         if (filesWithCoords.length === 0) return;
 
         const bounds = L.latLngBounds(
             filesWithCoords.map(f => [f.coords!.latitude, f.coords!.longitude])
         );
-        
-        map.fitBounds(bounds, { padding: [50, 50] }); // Add padding so markers aren't on the edge
-    }, [map, filesWithCoords]); // Reruns if the set of photos changes
+        map.fitBounds(bounds, { padding: [50, 50] }); 
+    }, [map, filesWithCoords]);
 
-    // Pan the map and open the popup for the active file.
     useEffect(() => {
         if (activeIndex === null) return;
         
@@ -64,7 +62,7 @@ const MapEvents: React.FC<MapEventsProps> = ({ filesWithCoords, activeIndex, mar
     return null;
 }
 
-export const MapDisplay: React.FC<MapDisplayProps> = ({ files, activeIndex }) => {
+export const MapDisplay: React.FC<MapDisplayProps> = ({ files, activeIndex, onActiveIndexChange }) => {
     const { filesWithCoords } = useMapLogic(files);
     const markerRefs = useRef<(L.Marker | null)[]>([]);
 
@@ -95,6 +93,11 @@ export const MapDisplay: React.FC<MapDisplayProps> = ({ files, activeIndex }) =>
                                 file.coords?.longitude ?? 0
                             ]}
                             ref={(el) => { if (file.index !== undefined) markerRefs.current[file.index] = el; }}
+                            eventHandlers={{
+                                click: () => {
+                                    onActiveIndexChange(file.index!);
+                                }
+                            }}
                         >
                             <Popup>
                                 <img src={file.image || file.preview} alt="preview" className="w-24 h-24 object-cover"/>
