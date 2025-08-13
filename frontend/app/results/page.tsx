@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { MapDisplayProps } from "@/components/Map";
 import { useAllResults } from "@/hooks/allResults";
 import dynamic from "next/dynamic";

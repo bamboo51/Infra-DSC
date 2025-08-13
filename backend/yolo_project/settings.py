@@ -28,10 +28,9 @@ if not SECRET_KEY:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# in production, changed allowed hosts to specific domains
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "192.168.253.124",
+    "*"
 ]
 
 
@@ -140,6 +139,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://192.168.253.124:3000",
 ]
 
-SITE_URL = "http://192.168.253.124:8000"
+SITE_URL = "http://192.168.63.143:8000"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

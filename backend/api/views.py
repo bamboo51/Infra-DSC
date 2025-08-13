@@ -6,7 +6,7 @@ from django.conf import settings
 import os
 
 from ultralytics import YOLO
-from PIL import Image
+from PIL import Image, ImageOps
 import numpy as np
 import io
 import cv2
@@ -96,6 +96,7 @@ class YOLOPredictionView(APIView):
         try:
             image_data = image_file.read()
             pil_image = Image.open(io.BytesIO(image_data))
+            pil_image = ImageOps.exif_transpose(pil_image)
         except Exception as e:
             return Response({"error": f"Invalid image file: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -192,11 +193,7 @@ class AllResultsView(APIView):
                 'detections', 
                 'segmentations'
             ).all().order_by("-uploaded_at")
-            print(f"--- [2] Found {len(all_photos)} photos. Starting serialization...")
             serializer = AllResultsPhotoSerializer(all_photos, many=True, context={'request': request})
-            print("--- [3] Serialization complete. Sending response.")
-            with open("test.txt", "w") as f:
-                f.write(json.dumps(serializer.data, indent=2))
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         except Exception as e:
