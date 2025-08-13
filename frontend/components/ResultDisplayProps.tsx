@@ -11,7 +11,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ canvasRef, error, 
 			<div className="relative w-full max-w-4xl border-2 border-gray-600 rounded-lg overflow-hidden">
 				<canvas
 					ref={canvasRef}
-					className="max-w-full h-auto rounded-lg"
+					className="max-w-full max-h-full"
 				/>
 			</div>
 		)}

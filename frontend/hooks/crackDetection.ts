@@ -15,7 +15,7 @@ export const crackDetection = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const activeFile = activeFileIndex !== null ? selectedFiles[activeFileIndex] : null;
 
-  const getExifData = (file: File): Promise<Coords | undefined> => {
+  const getExifData = (file: File): Promise<Coords | null> => {
     return new Promise((resolve) => {
       EXIF.getData(file as any, function(this: any){
         const latitude = EXIF.getTag(this, "GPSLatitude");
@@ -33,7 +33,7 @@ export const crackDetection = () => {
             longitude: lonRef === "E" ? lonDec : -lonDec,
           });
         } else {
-          resolve(undefined);
+          resolve(null);
         }
       });
     });
@@ -55,7 +55,7 @@ export const crackDetection = () => {
         return new Promise<SelectedFile>((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            resolve({ file, preview: reader.result as string, coords });
+            resolve({ file, preview: reader.result as string, coords, crack_ratio: 0 });
           };
           reader.readAsDataURL(file);
         });
@@ -126,6 +126,7 @@ export const crackDetection = () => {
       if (resultForActiveFile) {
         await CanvasDrawer.drawSegmentationMask(ctx, resultForActiveFile.segmentation);
         CanvasDrawer.drawDetectionBoxes(ctx, resultForActiveFile.detection);
+        CanvasDrawer.drawDamageRatio(ctx, resultForActiveFile.crack_ratio);
       }
     };
 

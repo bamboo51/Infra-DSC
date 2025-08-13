@@ -7,6 +7,7 @@ class Photo(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     image_hash = models.CharField(max_length=64, unique=True, db_index=True, null=True)
+    crack_ratio = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return f"Photo {self.id} - {self.image.name}"
