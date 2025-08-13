@@ -45,6 +45,8 @@ export const useAllResults = () => {
             await CanvasDrawer.drawSegmentationMask(ctx, activeFile.segmentations || []);
             CanvasDrawer.drawDetectionBoxes(ctx, activeFile.detections || []);
         }
+
+        CanvasDrawer.drawDamageRatio(ctx, activeFile.crack_ratio);
       }
     };
 

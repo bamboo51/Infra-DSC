@@ -49,8 +49,8 @@ class YOLOPredictionView(APIView):
         return predictions
     
     def segmentation(self, model=segment_model, image=None, name=None):
-        #print(f"segmentation: {name}")
         SEGMENTATION_COLORS = ['#92CC17', '#3DDB86', '#1A9334', '#00D4BB', '#2C99A8']
+        DAMAGE_CLASSES = {'crack', 'pothole'}
         results = model.predict(image)[0]
 
         grouped_results = defaultdict(lambda: {"masks": [], "confidences": []})
@@ -60,9 +60,17 @@ class YOLOPredictionView(APIView):
                 grouped_results[int(cls)]["confidences"].append(conf)
 
         masks = []
+        damage_pixel_count = 0
+        total_pixel_count = 0
         for cls, mask_list in grouped_results.items():
-            resized_masks = [cv2.resize(m, (image.width, image.height)) > 0.5 for m in mask_list["masks"]]
+            class_name = segment_model.names[int(cls)]
+            resized_masks = [cv2.resize(m, (image.width, image.height)) > 0.5 for m in mask_list["masks"]]            
             combined_mask = np.logical_or.reduce(resized_masks)
+            current_class_pixels = np.sum(combined_mask)
+            total_pixel_count += current_class_pixels
+            if class_name in DAMAGE_CLASSES:
+                damage_pixel_count += current_class_pixels
+
             mask_img = np.zeros((image.height, image.width, 4), dtype=np.uint8)
             color_hex = SEGMENTATION_COLORS[cls % len(SEGMENTATION_COLORS)]
             r,g,b = int(color_hex[1:3], 16), int(color_hex[3:5], 16), int(color_hex[5:7], 16)
@@ -77,9 +85,14 @@ class YOLOPredictionView(APIView):
                 "mask_uri": mask_data_uri,
                 "class_id": int(cls),
                 "confidence": float(np.mean(mask_list["confidences"])),
-                "class_name": segment_model.names[int(cls)]
+                "class_name": segment_model.names[int(cls)],
             })
-        return masks
+        if total_pixel_count > 0:
+            crack_ratio = damage_pixel_count / total_pixel_count
+        else:
+            crack_ratio = 0.0
+        
+        return masks, crack_ratio
 
     def post(self, request, *args, **kwargs):
         # check if an image file is present in the request
@@ -130,6 +143,7 @@ class YOLOPredictionView(APIView):
             return Response({
                 "detection": detection_results,
                 "segmentation": segmentation_results,
+                "crack_ratio": existing_photo.crack_ratio,
                 #"photo_id": existing_photo.id
             }, status=status.HTTP_200_OK)
 
@@ -147,7 +161,9 @@ class YOLOPredictionView(APIView):
 
         # perform inference
         detection_results = self.detection(image=pil_image, name=image_file.name)
-        segmentation_results = self.segmentation(image=pil_image, name=image_file.name)
+        segmentation_results, crack_ratio = self.segmentation(image=pil_image, name=image_file.name)
+        photo_instance.crack_ratio = crack_ratio
+        photo_instance.save()
 
         # save detections to database
         for det in detection_results:
@@ -183,6 +199,7 @@ class YOLOPredictionView(APIView):
         return Response({
             "detection": detection_results,
             "segmentation": segmentation_results,
+            "crack_ratio": photo_instance.crack_ratio,
             #"photo_id": photo_instance.id # further id for user login and rewards
         }, status=status.HTTP_201_CREATED)
 

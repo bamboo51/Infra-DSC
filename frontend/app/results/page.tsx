@@ -63,7 +63,7 @@ export default function ResultsPage() {
                     // flex-shrink-0 prevents items from shrinking in the horizontal scroll view
                     className={`flex-shrink-0 flex items-center p-2 rounded-lg cursor-pointer transition-colors ${
                       activeFileIndex === index
-                        ? "bg-blue-600"
+                        ? "bg-gray-600"
                         : "bg-gray-700 hover:bg-gray-600"
                     }`}
                   >
@@ -87,15 +87,15 @@ export default function ResultsPage() {
                 Results for Photo ID: {activeFile.id}
               </h2>
               <div className="space-y-6">
-                <ResultDisplay
-                  canvasRef={canvasRef}
-                  hasActiveImage={true}
-                  error={""}
-                />
                 <DynamicMapDisplay
                   files={allFiles}
                   activeIndex={activeFileIndex}
                   onActiveIndexChange={setActiveFileIndex}
+                />
+                <ResultDisplay
+                  canvasRef={canvasRef}
+                  hasActiveImage={true}
+                  error={""}
                 />
               </div>
             </>

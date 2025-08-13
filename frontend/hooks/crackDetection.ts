@@ -126,6 +126,7 @@ export const crackDetection = () => {
       if (resultForActiveFile) {
         await CanvasDrawer.drawSegmentationMask(ctx, resultForActiveFile.segmentation);
         CanvasDrawer.drawDetectionBoxes(ctx, resultForActiveFile.detection);
+        CanvasDrawer.drawDamageRatio(ctx, resultForActiveFile.crack_ratio);
       }
     };
 

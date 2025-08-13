@@ -39,7 +39,7 @@ class AllResultsPhotoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Photo
-        fields = ['id', 'image', 'uploaded_at', 'coords', 'detections', 'segmentations']
+        fields = ['id', 'image', 'uploaded_at', 'coords', 'detections', 'segmentations', 'crack_ratio']
 
     def get_image(self, obj):
         return f"{settings.SITE_URL}{obj.image.url}"

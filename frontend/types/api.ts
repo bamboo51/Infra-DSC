@@ -19,12 +19,14 @@ export interface Segmentation {
 export interface ApiResponse {
   detection: Detection[];
   segmentation: Segmentation[];
+  crack_ratio: number;
 }
 
 export interface SelectedFile {
   file: File;
   preview: string;
   coords: Coords | null;
+  crack_ratio: number;
 }
 
 export interface PhotoWithResults {
@@ -32,6 +34,7 @@ export interface PhotoWithResults {
   image: string;
   uploaded_at: string;
   coords: Coords | null;
+  crack_ratio: number;
   detections: Detection[] | null;
   segmentations: Segmentation[] | null;
 }

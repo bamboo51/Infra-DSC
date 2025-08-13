@@ -87,5 +87,48 @@ export const CanvasDrawer = {
       ctx.fillStyle = '#FFFFFF';
       ctx.fillText(label, labelX + padding, labelY + textHeight + padding / 2);
     });
+  },
+
+  /**
+   * Draws the overall damage ratio on the canvas.
+   * @param ctx The 2D rendering context for the canvas.
+   * @param damageRatio The calculated damage ratio (e.g., 0.123).
+   */
+  drawDamageRatio(ctx: CanvasRenderingContext2D, damageRatio: number): void {
+    const canvas = ctx.canvas;
+
+    const ratioAsPercent = (damageRatio * 100).toFixed(2);
+    const label = `Damage Ratio: ${ratioAsPercent}%`;
+
+    const baseSize = Math.min(canvas.width, canvas.height);
+    const fontSize = Math.max(24, Math.round(baseSize * 0.035));
+    const padding = 10;
+    const cornerRadius = 8;
+    const position = { x: padding, y: padding }; // Top-left corner
+
+    ctx.font = `bold ${fontSize}px sans-serif`;
+
+    const textMetrics = ctx.measureText(label);
+    const textWidth = textMetrics.width;
+    const textHeight = fontSize; 
+    const rectWidth = textWidth + (padding * 2);
+    const rectHeight = textHeight + (padding * 2);
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'; 
+    ctx.beginPath();
+    ctx.moveTo(position.x + cornerRadius, position.y);
+    ctx.lineTo(position.x + rectWidth - cornerRadius, position.y);
+    ctx.quadraticCurveTo(position.x + rectWidth, position.y, position.x + rectWidth, position.y + cornerRadius);
+    ctx.lineTo(position.x + rectWidth, position.y + rectHeight - cornerRadius);
+    ctx.quadraticCurveTo(position.x + rectWidth, position.y + rectHeight, position.x + rectWidth - cornerRadius, position.y + rectHeight);
+    ctx.lineTo(position.x + cornerRadius, position.y + rectHeight);
+    ctx.quadraticCurveTo(position.x, position.y + rectHeight, position.x, position.y + rectHeight - cornerRadius);
+    ctx.lineTo(position.x, position.y + cornerRadius);
+    ctx.quadraticCurveTo(position.x, position.y, position.x + cornerRadius, position.y);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(label, position.x + padding, position.y + textHeight + padding / 2);
   }
 };
