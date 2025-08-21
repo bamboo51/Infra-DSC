@@ -16,17 +16,17 @@ export interface Segmentation {
   class_name: string;
 }
 
-// Returns immediately with a message and the ID of the new photo.
-export interface PredictionResponse {
-  message: string;
-  photo_id: number;
-}
-
 // Client-side file handling before upload
 export interface SelectedFile {
   file: File;
   preview: string;
   coords: Coords | null;
+  crack_ratio: number;
+}
+
+export interface ApiResponse {
+  detection: Detection[];
+  segmentation: Segmentation[];
   crack_ratio: number;
 }
 

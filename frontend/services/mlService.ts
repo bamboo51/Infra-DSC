@@ -1,9 +1,9 @@
 // Service to send the data to Django Backend
 import { API_URL } from "@/constants/constant";
 import {
-  PredictionResponse,
   PhotoWithResults,
   PaginatedPhotoList,
+  ApiResponse,
 } from "@/types/api";
 import { Coords } from "@/types/coords";
 import axios from "axios";
@@ -12,7 +12,7 @@ export const ApiService = {
   async predict(
     imageFile: File,
     coords: Coords | null
-  ): Promise<PredictionResponse> {
+  ): Promise<ApiResponse> {
     const formData = new FormData();
     formData.append("image", imageFile);
     if (coords) {
@@ -20,7 +20,7 @@ export const ApiService = {
       formData.append("longitude", coords.longitude.toString());
     }
 
-    const response = await axios.post<PredictionResponse>(
+    const response = await axios.post<ApiResponse>(
       `${API_URL}/predict/`,
       formData,
       {
