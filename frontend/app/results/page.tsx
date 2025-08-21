@@ -22,7 +22,7 @@ export default function ResultsPage() {
     error,
     canvasRef,
   } = useAllResults();
-  
+
   const activeFile =
     activeFileIndex !== null && allFiles.length > 0
       ? allFiles[activeFileIndex]
@@ -46,56 +46,52 @@ export default function ResultsPage() {
 
   return (
     <main className="flex h-screen flex-col bg-gray-900 text-white font-sans">
-      {/* Main container: Stacks vertically on mobile, row on desktop */}
       <div className="flex flex-col md:flex-row flex-grow overflow-hidden">
-        
-        {/* Photo List Section */}
         {allFiles.length > 0 && (
-            <div className="flex-shrink-0 p-4 border-b md:border-b-0 md:border-r border-gray-700 md:w-1/3 lg:w-1/4 md:h-full md:overflow-y-auto">
-              <h2 className="text-xl font-bold mb-4">All Uploaded Photos</h2>
-              
-              {/* Photo Rail: Scrolls horizontally on mobile, stacks vertically on desktop */}
-              <div className="flex flex-row space-x-3 pb-2 overflow-x-auto md:flex-col md:space-x-0 md:space-y-2 md:pb-0">
-                {allFiles.map((file, index) => (
-                  <div
-                    key={file.id}
-                    onClick={() => setActiveFileIndex(index)}
-                    // flex-shrink-0 prevents items from shrinking in the horizontal scroll view
-                    className={`flex-shrink-0 flex items-center p-2 rounded-lg cursor-pointer transition-colors ${
-                      activeFileIndex === index
-                        ? "bg-gray-600"
-                        : "bg-gray-700 hover:bg-gray-600"
-                    }`}
-                  >
-                    <img
-                      src={file.image}
-                      alt={`Thumbnail for ID ${file.id}`}
-                      className="w-12 h-12 rounded-md object-cover mr-3"
-                    />
-                    <span className="font-medium">ID: {file.id}</span>
-                  </div>
-                ))}
-              </div>
+          <div className="flex-shrink-0 p-4 border-b md:border-b-0 md:border-r border-gray-700 md:w-1/3 lg:w-1/4 md:h-full md:overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">All Uploaded Photos</h2>
+
+            <div className="flex flex-row space-x-3 pb-2 overflow-x-auto md:flex-col md:space-x-0 md:space-y-2 md:pb-0">
+              {allFiles.map((file, index) => (
+                <div
+                  key={file.id}
+                  onClick={() => setActiveFileIndex(index)}
+                  // flex-shrink-0 prevents items from shrinking in the horizontal scroll view
+                  className={`flex-shrink-0 flex items-center p-2 rounded-lg cursor-pointer transition-colors ${
+                    activeFileIndex === index
+                      ? "bg-gray-600"
+                      : "bg-gray-700 hover:bg-gray-600"
+                  }`}
+                >
+                  <img
+                    src={file.image}
+                    alt={`Thumbnail for ID ${file.id}`}
+                    className="w-12 h-12 rounded-md object-cover mr-3"
+                  />
+                  <span className="font-medium">ID: {file.id}</span>
+                </div>
+              ))}
             </div>
+          </div>
         )}
 
-        {/* Right Column: Canvas and Map */}
         <div className="flex-grow p-6 overflow-y-auto">
           {activeFile ? (
             <>
               <h2 className="text-2xl font-bold mb-4">
                 Results for Photo ID: {activeFile.id}
               </h2>
-              <div className="space-y-6">
-                <DynamicMapDisplay
-                  files={allFiles}
-                  activeIndex={activeFileIndex}
-                  onActiveIndexChange={setActiveFileIndex}
-                />
+              {/* This is the new grid container for the map and results */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <ResultDisplay
                   canvasRef={canvasRef}
                   hasActiveImage={true}
                   error={""}
+                />
+                <DynamicMapDisplay
+                  files={allFiles}
+                  activeIndex={activeFileIndex}
+                  onActiveIndexChange={setActiveFileIndex}
                 />
               </div>
             </>

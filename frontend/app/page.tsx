@@ -50,13 +50,18 @@ const allPredicted = selectedFiles.length > 0 && Object.keys(results).length ===
           <ImageGallery files={selectedFiles} results={results} activeIndex={activeFileIndex} onSelect={setActiveFileIndex} />
         </section>
 
-        <ResultDisplay
-          canvasRef={canvasRef}
-          hasActiveImage={activeFileIndex !== null}
-          error={error}
-        />
-
-        <DynamicMapDisplay files={selectedFiles} activeIndex={activeFileIndex} onActiveIndexChange={setActiveFileIndex} />
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <ResultDisplay
+            canvasRef={canvasRef}
+            hasActiveImage={activeFileIndex !== null}
+            error={error}
+          />
+          <DynamicMapDisplay
+            files={selectedFiles} 
+            activeIndex={activeFileIndex} 
+            onActiveIndexChange={setActiveFileIndex} 
+          />
+        </div>
       </div>
     </main>
   );
