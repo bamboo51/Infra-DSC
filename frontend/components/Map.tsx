@@ -7,8 +7,7 @@ import { PhotoMetadata } from "@/types/api";
 import { MapPin, Image } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
-// Fix Leaflet default markers
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype as any)._getIconUrl; // eslint-disable-line
 
 L.Icon.Default.mergeOptions({
   iconUrl: "/leaflet/marker-icon.png",
@@ -53,8 +52,6 @@ interface MapMarkerProps {
 }
 
 const MapMarker: React.FC<MapMarkerProps> = memo(({ file, isActive, onSelect, markerRef }) => {
-  // useMemo is used here to ensure the event handler object doesn't get
-  // recreated on every render unless the props it depends on change.
   const eventHandlers = useMemo(
     () => ({
       click() {
@@ -83,13 +80,13 @@ const MapMarker: React.FC<MapMarkerProps> = memo(({ file, isActive, onSelect, ma
           />
           <div className="text-center">
             <p className="text-sm font-medium text-gray-800">Photo ID: {file.id}</p>
-            {/* ... other popup content ... */}
           </div>
         </div>
       </Popup>
     </Marker>
   );
 });
+MapMarker.displayName = 'MapMarker'; 
 
 export interface MapDisplayProps {
   files: PhotoMetadata[];

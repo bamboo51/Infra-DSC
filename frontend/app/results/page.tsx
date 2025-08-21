@@ -4,7 +4,7 @@ import { MapDisplayProps } from "@/components/Map";
 import { useAllResults } from "@/hooks/allResults";
 import dynamic from "next/dynamic";
 import { ResultDisplay } from "@/components/ResultDisplayProps";
-import { ChevronLeft, ChevronRight, Image, MapPin, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, Image, Upload } from "lucide-react";
 import { useState, memo } from "react";
 import { PhotoMetadata } from "@/types/api";
 
@@ -48,7 +48,7 @@ const Sidebar = memo(
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                <Image className="w-4 h-4 text-white" />
+                <Image className="w-4 h-4 text-white"/>
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-white">
