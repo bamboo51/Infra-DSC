@@ -23,7 +23,7 @@ jobs:
           pip install -r backend/requirements.txt
       - name: Run backend tests
         env:
-          SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           cd backend
           python manage.py test
