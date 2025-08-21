@@ -30,6 +30,23 @@ class NestedSegmentationSerializer(serializers.ModelSerializer):
         model = Segmentation
         fields = ["class_name", "confidence", "mask_uri"]
 
+class PhotoListSerializer(serializers.ModelSerializer):
+    coords = serializers.SerializerMethodField()
+    thumbnail = serializers.ImageField()
+
+    class Meta:
+        model = Photo
+        fields = ['id', 'thumbnail', 'uploaded_at', 'coords']
+    
+    def get_coords(self, obj):
+        if obj.latitude is not None and obj.longitude is not None:
+            return {
+                "latitude": obj.latitude,
+                "longitude": obj.longitude
+            }
+        return None
+
+
 class AllResultsPhotoSerializer(serializers.ModelSerializer):
     """A serializer for the photo model including all results"""
     image = serializers.SerializerMethodField()

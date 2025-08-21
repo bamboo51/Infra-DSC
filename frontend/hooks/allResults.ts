@@ -1,63 +1,97 @@
-import { PhotoWithResults } from "@/types/api";
 import { useEffect, useRef, useState } from "react";
-import { fetchPhotoFromDB } from "@/services/mlService";
+import { ApiService } from "@/services/mlService";
 import { CanvasDrawer } from "@/utils/canvasDrawer";
+import { PhotoMetadata, PhotoWithResults } from "@/types/api";
 
 export const useAllResults = () => {
-  const [allFiles, setAllFiles] = useState<PhotoWithResults[]>([]);
-  const [activeFileIndex, setActiveFileIndex] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [photoList, setPhotoList] = useState<PhotoMetadata[]>([]);
+  const [activePhotoDetails, setActivePhotoDetails] =
+    useState<PhotoWithResults | null>(null);
+  const [activeFileIndex, setActiveFileIndex] = useState<number | null>(0);
+
+  const [isListLoading, setIsListLoading] = useState<boolean>(true);
+  const [isDetailsLoading, setIsDetailsLoading] = useState<boolean>(false);
+
+  const [error, setError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadInitialList = async () => {
       try {
-        const data = await fetchPhotoFromDB();
-        console.log("data:", data);
-        setAllFiles(data || []);
-        if (data && data.length > 0) {
-          setActiveFileIndex(0);
+        const data = await ApiService.fetchPhotoList();
+        setPhotoList(data.results);
+        if (!data.results || data.results.length === 0) {
+          setActiveFileIndex(null);
         }
       } catch (err) {
-        setError("Failed to fetch data from the server.");
-        console.error("Error fetching data:", err);
+        setError("Failed to load photo list");
       } finally {
-        setIsLoading(false);
+        setIsListLoading(false);
       }
     };
-    loadData();
+    loadInitialList();
   }, []);
 
   useEffect(() => {
-    const drawActiveFile = async () => {
-      const activeFile =
-        activeFileIndex !== null ? allFiles[activeFileIndex] : null;
+    if (activeFileIndex === null || photoList.length === 0) {
+      setActivePhotoDetails(null);
+      return;
+    }
 
-      // Check for the canvas and the active file itself
-      if (activeFile && canvasRef.current) {
-        const ctx = canvasRef.current.getContext("2d");
-        if (!ctx) return;
-
-        await CanvasDrawer.drawImage(ctx, activeFile.image);
-
-        if (activeFile.detections || activeFile.segmentations) {
-            await CanvasDrawer.drawSegmentationMask(ctx, activeFile.segmentations || []);
-            CanvasDrawer.drawDetectionBoxes(ctx, activeFile.detections || []);
-        }
-
-        CanvasDrawer.drawDamageRatio(ctx, activeFile.crack_ratio);
+    const loadActiveDetails = async () => {
+      setIsDetailsLoading(true);
+      setActivePhotoDetails(null);
+      try {
+        const photoId = photoList[activeFileIndex].id;
+        const details = await ApiService.fetchPhotoDetails(photoId);
+        setActivePhotoDetails(details);
+      } catch (err) {
+        setError("Failed to load photo details");
+      } finally {
+        setIsDetailsLoading(false);
       }
     };
 
-    drawActiveFile();
-  }, [activeFileIndex, allFiles]);
+    loadActiveDetails();
+  }, [activeFileIndex, photoList]);
+
+  useEffect(() => {
+    const draw = async () => {
+      if (!activePhotoDetails || !canvasRef.current) {
+        const ctx = canvasRef.current?.getContext("2d");
+        ctx?.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        return;
+      }
+
+      const ctx = canvasRef.current.getContext("2d");
+      if (!ctx) return;
+
+      await CanvasDrawer.drawImage(ctx, activePhotoDetails.image);
+
+      if (activePhotoDetails.detections || activePhotoDetails.segmentations) {
+        await CanvasDrawer.drawSegmentationMask(
+          ctx,
+          activePhotoDetails.segmentations || []
+        );
+        CanvasDrawer.drawDetectionBoxes(
+          ctx,
+          activePhotoDetails.detections || []
+        );
+      }
+
+      CanvasDrawer.drawDamageRatio(ctx, activePhotoDetails.crack_ratio);
+    };
+    draw();
+  }, [activePhotoDetails]);
 
   return {
-    allFiles,
+    allFiles: photoList,
+    activeFile: activePhotoDetails,
     activeFileIndex,
     setActiveFileIndex,
-    isLoading,
+    isLoading: isListLoading || isDetailsLoading,
+    isListLoading,
+    isDetailsLoading,
     error,
     canvasRef,
   };

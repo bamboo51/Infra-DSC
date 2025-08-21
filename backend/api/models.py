@@ -1,4 +1,6 @@
 from django.db import models
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 # Create your models here.
 class Photo(models.Model):
@@ -8,6 +10,12 @@ class Photo(models.Model):
     longitude = models.FloatField(null=True, blank=True)
     image_hash = models.CharField(max_length=64, unique=True, db_index=True, null=True)
     crack_ratio = models.FloatField(null=True, blank=True)
+    thumbnail = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(300, 300)],
+        format='JPEG',
+        options={'quality': 90}
+    )
 
     def __str__(self):
         return f"Photo {self.id} - {self.image.name}"

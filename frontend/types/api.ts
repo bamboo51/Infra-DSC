@@ -16,16 +16,17 @@ export interface Segmentation {
   class_name: string;
 }
 
-export interface ApiResponse {
-  detection: Detection[];
-  segmentation: Segmentation[];
-  crack_ratio: number;
-}
-
+// Client-side file handling before upload
 export interface SelectedFile {
   file: File;
   preview: string;
   coords: Coords | null;
+  crack_ratio: number;
+}
+
+export interface ApiResponse {
+  detection: Detection[];
+  segmentation: Segmentation[];
   crack_ratio: number;
 }
 
@@ -37,4 +38,21 @@ export interface PhotoWithResults {
   crack_ratio: number;
   detections: Detection[] | null;
   segmentations: Segmentation[] | null;
+  status?: string;
+}
+
+// Item from the GET /api/photos/ list endpoint
+export interface PhotoMetadata {
+  id: number;
+  thumbnail: string;
+  coords: Coords | null;
+  uploaded_at: string;
+}
+
+// Response from the GET /api/photos/ endpoint.
+export interface PaginatedPhotoList {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: PhotoMetadata[];
 }

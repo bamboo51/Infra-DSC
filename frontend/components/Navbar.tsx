@@ -77,8 +77,8 @@ export const Navbar = () => {
 
   const menuItems = [
     { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
     { name: "Results", href: "/results" },
+    { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
 

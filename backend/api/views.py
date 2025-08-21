@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from django.conf import settings
 import os
@@ -13,10 +15,9 @@ import cv2
 import base64
 from collections import defaultdict
 import imagehash
-import json
 
 from .models import Photo
-from .serializer import PhotoSerializer, DetectionSerializer, SegmentationSerializer, AllResultsPhotoSerializer
+from .serializer import PhotoListSerializer, PhotoSerializer, DetectionSerializer, SegmentationSerializer, AllResultsPhotoSerializer
 
 DETECT_MODEL_PATH = os.path.join(settings.BASE_DIR, "api", "weights", "detect.pt")
 SEGMENT_MODEL_PATH = os.path.join(settings.BASE_DIR, "api", "weights", "segment.pt")
@@ -110,6 +111,7 @@ class YOLOPredictionView(APIView):
             image_data = image_file.read()
             pil_image = Image.open(io.BytesIO(image_data))
             pil_image = ImageOps.exif_transpose(pil_image)
+            pil_image = pil_image.convert("RGB")
         except Exception as e:
             return Response({"error": f"Invalid image file: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -202,16 +204,18 @@ class YOLOPredictionView(APIView):
             "crack_ratio": photo_instance.crack_ratio,
             #"photo_id": photo_instance.id # further id for user login and rewards
         }, status=status.HTTP_201_CREATED)
+    
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 50
+    page_size_query_param = "page_size"
+    max_page_size = 100
 
-class AllResultsView(APIView):
-    def get(self, request, *args, **kwargs):
-        try:
-            all_photos = Photo.objects.prefetch_related(
-                'detections', 
-                'segmentations'
-            ).all().order_by("-uploaded_at")
-            serializer = AllResultsPhotoSerializer(all_photos, many=True, context={'request': request})
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+class PhotoListView(ListAPIView):
+    queryset = Photo.objects.all().order_by("-uploaded_at")
+    serializer_class = PhotoListSerializer
+    pagination_class = StandardResultsSetPagination
+
+class PhotoDetailView(RetrieveAPIView):
+    queryset = Photo.objects.prefetch_related("detections", "segmentations").all()
+    serializer_class = AllResultsPhotoSerializer
+    lookup_field = "pk"

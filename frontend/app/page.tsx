@@ -7,13 +7,17 @@ import { Dropzone } from "@/components/DropZone";
 import { ImageGallery } from "@/components/ImageGallery";
 import { MapDisplayProps } from "@/components/Map";
 import dynamic from "next/dynamic";
+import { useMemo } from "react";
 
 const DynamicMapDisplay = dynamic<MapDisplayProps>(
-  () => import("@/components/Map").then(mod => mod.MapDisplay),
-  { ssr: false, loading: () => <p className="text-center mt-8">Loading map...</p> }
+  () => import("@/components/Map").then((mod) => mod.MapDisplay),
+  {
+    ssr: false,
+    loading: () => <p className="text-center mt-8">Loading map...</p>,
+  }
 );
 
-export default function App(){
+export default function App() {
   const {
     selectedFiles,
     activeFileIndex,
@@ -28,7 +32,18 @@ export default function App(){
     handlePredictAll,
   } = crackDetection();
 
-const allPredicted = selectedFiles.length > 0 && Object.keys(results).length === selectedFiles.length;
+  const allPredicted =
+    selectedFiles.length > 0 &&
+    Object.keys(results).length === selectedFiles.length;
+
+  const filesForMap = useMemo(() => {
+    return selectedFiles.map((file, index) => ({
+      id: index,
+      thumbnail: file.preview,
+      coords: file.coords,
+      uploaded_at: new Date().toISOString(),
+    }));
+  }, [selectedFiles]);
 
   return (
     <main className="flex min-h-screen flex-col items-center p-6 sm:p-12 bg-gray-900 text-white font-sans">
@@ -40,23 +55,37 @@ const allPredicted = selectedFiles.length > 0 && Object.keys(results).length ===
         </header>
 
         <section className="bg-gray-800 p-6 sm:p-8 rounded-xl shadow-2xl flex flex-col items-center">
-          <Dropzone 
+          <Dropzone
             processFiles={processFiles}
             isDragging={isDragging}
             setIsDragging={setIsDragging}
             disabled={isLoading}
           />
-          <PredictButton onClick={handlePredictAll} isLoading={isLoading} disabled={activeFileIndex === null || allPredicted} />
-          <ImageGallery files={selectedFiles} results={results} activeIndex={activeFileIndex} onSelect={setActiveFileIndex} />
+          <PredictButton
+            onClick={handlePredictAll}
+            isLoading={isLoading}
+            disabled={activeFileIndex === null || allPredicted}
+          />
+          <ImageGallery
+            files={selectedFiles}
+            results={results}
+            activeIndex={activeFileIndex}
+            onSelect={setActiveFileIndex}
+          />
         </section>
 
-        <ResultDisplay
-          canvasRef={canvasRef}
-          hasActiveImage={activeFileIndex !== null}
-          error={error}
-        />
-
-        <DynamicMapDisplay files={selectedFiles} activeIndex={activeFileIndex} onActiveIndexChange={setActiveFileIndex} />
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <ResultDisplay
+            canvasRef={canvasRef}
+            hasActiveImage={activeFileIndex !== null}
+            error={error}
+          />
+          <DynamicMapDisplay
+            files={filesForMap}
+            activeIndex={activeFileIndex}
+            onActiveIndexChange={setActiveFileIndex}
+          />
+        </div>
       </div>
     </main>
   );
