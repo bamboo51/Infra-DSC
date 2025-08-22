@@ -23,14 +23,14 @@ const createCustomIcon = (isActive: boolean) => {
       <div class="relative">
         <div class="${
           isActive
-            ? "w-6 h-6 bg-blue-500 border-2 border-white shadow-lg shadow-blue-500/50"
+            ? "w-6 h-6 bg-red-600 border-2 border-white shadow-lg"
             : "w-5 h-5 bg-gray-600 border-2 border-white shadow-md"
         } rounded-full transition-all duration-200 ${
       isActive ? "scale-110" : ""
     }"></div>
         ${
           isActive
-            ? '<div class="absolute -top-1 -left-1 w-8 h-8 bg-blue-400/30 rounded-full animate-pulse"></div>'
+            ? '<div class="absolute -top-1 -left-1 w-8 h-8 bg-gray-400/30 rounded-full animate-pulse"></div>'
             : ""
         }
       </div>
@@ -179,15 +179,15 @@ const MapDisplayComponent: React.FC<MapDisplayProps> = ({
 
   if (filesWithCoords.length === 0) {
     return (
-      <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 p-8">
+      <div className="bg-gray-50 rounded-xl border border-gray-200 p-8">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gray-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <MapPin className="w-8 h-8 text-gray-400" />
+          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+            <MapPin className="w-8 h-8 text-gray-500" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-300 mb-2">
+          <h3 className="text-lg font-semibold text-black mb-2">
             No Location Data
           </h3>
-          <p className="text-gray-500">
+          <p className="text-gray-600">
             Photos with GPS coordinates will appear on the map.
           </p>
         </div>
@@ -196,18 +196,18 @@ const MapDisplayComponent: React.FC<MapDisplayProps> = ({
   }
 
   return (
-    <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 overflow-hidden">
+    <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
       {/* Enhanced Header */}
-      <div className="p-4 border-b border-gray-700/50">
+      <div className="p-4 border-b border-gray-200">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
             <MapPin className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold text-black">
               Photo Locations
             </h3>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-600">
               {filesWithCoords.length} photo
               {filesWithCoords.length !== 1 ? "s" : ""} with GPS data
             </p>
@@ -251,9 +251,9 @@ const MapDisplayComponent: React.FC<MapDisplayProps> = ({
         </MapContainer>
 
         {/* Map Stats Overlay */}
-        <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2 text-sm text-white">
+        <div className="absolute bottom-4 left-4 bg-white/70 backdrop-blur-sm rounded-lg px-3 py-2 text-sm text-black">
           <div className="flex items-center space-x-2">
-            <MapPin className="w-4 h-4 text-green-400" />
+            <MapPin className="w-4 h-4 text-black-400" />
             <span>{filesWithCoords.length} locations</span>
           </div>
         </div>

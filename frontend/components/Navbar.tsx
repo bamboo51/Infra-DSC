@@ -83,26 +83,39 @@ export const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-gray-900 shadow-md sticky top-0 z-50">
+    <nav className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-2">
-              <CustomLogo />
-              <span className="text-2xl font-bold text-white">Infra-DSC</span>
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="relative">
+                <div className="bg-black rounded-full p-2 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <CustomLogo />
+                </div>
+              </div>
+              <div>
+                <span className="text-2xl font-bold text-black group-hover:text-gray-700 transition-all duration-300">
+                  Infra-DSC
+                </span>
+                <p className="text-xs text-gray-600 group-hover:text-gray-500 transition-colors duration-300">
+                  AI Infrastructure Analysis
+                </p>
+              </div>
             </Link>
           </div>
 
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+            <div className="ml-10 flex items-baseline space-x-2">
               {menuItems.map((item) => (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
-                  className="text-white hover:bg-gray-600 hover:text-white px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                  className="relative group px-4 py-2 rounded-xl text-gray-600 hover:text-black font-medium transition-all duration-300 transform hover:scale-105"
                 >
-                  {item.name}
-                </a>
+                  <div className="absolute inset-0 bg-gray-100 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <span className="relative z-10">{item.name}</span>
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-black group-hover:w-8 transition-all duration-300"></div>
+                </Link>
               ))}
             </div>
           </div>
@@ -111,28 +124,35 @@ export const Navbar = () => {
             <button
               onClick={toggleMenu}
               type="button"
-              className="bg-gray-900 inline-flex items-center justify-center p-2 rounded-md text-white hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-500"
+              className="bg-gray-100 inline-flex items-center justify-center p-3 rounded-xl text-gray-600 hover:text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-gray-500 transition-all duration-300 transform hover:scale-105 shadow-sm"
               aria-controls="mobile-menu"
               aria-expanded="false"
             >
               <span className="sr-only">Open main menu</span>
-              {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
+              <div className="relative w-6 h-6">
+                {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
+              </div>
             </button>
           </div>
         </div>
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden" id="mobile-menu">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div className="md:hidden border-t border-gray-200" id="mobile-menu">
+          <div className="px-4 pt-4 pb-6 space-y-2 bg-white">
             {menuItems.map((item) => (
-              <a
+              <Link
                 key={item.name}
                 href={item.href}
-                className="text-white hover:bg-gray-100 hover:text-gray-500 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                className="group block px-4 py-3 rounded-xl text-gray-600 hover:text-black font-medium transition-all duration-300 transform hover:scale-105 relative"
+                onClick={() => setIsMenuOpen(false)}
               >
-                {item.name}
-              </a>
+                <div className="absolute inset-0 bg-gray-100 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span className="relative z-10 flex items-center">
+                  <span className="w-2 h-2 bg-black rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  {item.name}
+                </span>
+              </Link>
             ))}
           </div>
         </div>
