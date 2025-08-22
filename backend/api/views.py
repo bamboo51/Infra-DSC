@@ -15,7 +15,7 @@ import cv2
 import base64
 from collections import defaultdict
 import imagehash
-
+import torch
 from .models import Photo
 from .serializer import PhotoListSerializer, PhotoSerializer, DetectionSerializer, SegmentationSerializer, AllResultsPhotoSerializer
 
@@ -27,9 +27,17 @@ segment_model = YOLO(SEGMENT_MODEL_PATH)
 class YOLOPredictionView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
+    def __init__(self):
+        super().__init__()
+
+        if torch.cuda.is_available():
+            self.device = "cuda"
+        else:
+            self.device = "cpu"
+
     def detection(self, model=detect_model, image=None, name=None):
         #print(f"detection: {name}")
-        results = model.predict(image)
+        results = model.predict(image, device=self.device)
         predictions = []
 
         for result in results:
@@ -52,11 +60,11 @@ class YOLOPredictionView(APIView):
     def segmentation(self, model=segment_model, image=None, name=None):
         SEGMENTATION_COLORS = ['#92CC17', '#3DDB86', '#1A9334', '#00D4BB', '#2C99A8']
         DAMAGE_CLASSES = {'crack', 'pothole'}
-        results = model.predict(image)[0]
+        results = model.predict(image, device=self.device)[0]
 
         grouped_results = defaultdict(lambda: {"masks": [], "confidences": []})
         if results.masks is not None:
-            for mask, cls, conf in zip(results.masks.data.cpu().numpy(), results.boxes.cls, results.boxes.conf):
+            for mask, cls, conf in zip(results.masks.data.cpu().numpy(), results.boxes.cls.cpu().numpy(), results.boxes.conf.cpu().numpy()):
                 grouped_results[int(cls)]["masks"].append(mask)
                 grouped_results[int(cls)]["confidences"].append(conf)
 
@@ -103,8 +111,8 @@ class YOLOPredictionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         image_file = request.data["image"]
-        latitude = request.data["latitude"]
-        longitude = request.data["longitude"]
+        latitude = request.data["latitude"] if "latitude" in request.data else None
+        longitude = request.data["longitude"] if "longitude" in request.data else None
 
         # read image into memory for hashing and processing
         try:
