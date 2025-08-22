@@ -54,7 +54,7 @@ export default function App() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gray-50 rounded-full filter blur-xl opacity-20"></div>
       </div>
 
-      <div className="container mx-auto px-6 py-12 relative z-10">
+      <div className="container mx-auto px-6 py-12 relative z-10 max-w-4xl">
         {/* Hero Section */}
         <div className="text-center mb-20 relative">
           <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl p-12 border border-gray-200 shadow-xl">
@@ -126,7 +126,7 @@ export default function App() {
                   </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-black">
-                  Upload Images for Analysis
+                  検出するための道路画像アプロード
                 </h2>
               </div>
 
@@ -178,29 +178,25 @@ export default function App() {
                     </svg>
                   </div>
                   <h2 className="text-2xl font-bold text-black">
-                    Analysis Results
+                    検出結果
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                   <div className="relative group">
-                    <div className="relative bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 shadow-sm">
-                      <ResultDisplay
-                        canvasRef={canvasRef}
-                        hasActiveImage={activeFileIndex !== null}
-                        error={error}
-                      />
-                    </div>
+                    <ResultDisplay
+                      canvasRef={canvasRef}
+                      hasActiveImage={activeFileIndex !== null}
+                      error={error}
+                    />
                   </div>
 
                   <div className="relative group">
-                    <div className="relative bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 shadow-sm">
-                      <DynamicMapDisplay
-                        files={filesForMap}
-                        activeIndex={activeFileIndex}
-                        onActiveIndexChange={setActiveFileIndex}
-                      />
-                    </div>
+                    <DynamicMapDisplay
+                      files={filesForMap}
+                      activeIndex={activeFileIndex}
+                      onActiveIndexChange={setActiveFileIndex}
+                    />
                   </div>
                 </div>
               </div>
@@ -212,7 +208,8 @@ export default function App() {
       {/* Custom CSS for animations */}
       <style jsx>{`
         @keyframes gradient-x {
-          0%, 100% {
+          0%,
+          100% {
             background-size: 200% 200%;
             background-position: left center;
           }

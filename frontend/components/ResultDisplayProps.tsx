@@ -36,8 +36,8 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
             <Image className="w-8 h-8 text-gray-500" />
           </div>
-          <h3 className="text-lg font-semibold text-black mb-2">No Photo Selected</h3>
-          <p className="text-gray-600">Select a photo from the gallery to view analysis results.</p>
+          <h3 className="text-lg font-semibold text-black mb-2">画像が選択されていません</h3>
+          <p className="text-gray-600">ギャラリーから画像を選択して、検出結果を表示します。</p>
         </div>
       </div>
     );
@@ -53,8 +53,8 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
               <Image className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-black">Analysis Result</h3>
-              <p className="text-sm text-gray-600">AI-processed image with detections</p>
+              <h3 className="text-lg font-semibold text-black">検出結果</h3>
+              <p className="text-sm text-gray-600">AIによって処理された画像と検出結果</p>
             </div>
           </div>
           

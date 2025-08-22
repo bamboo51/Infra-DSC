@@ -39,40 +39,40 @@ export const Footer = () => {
                 <h3 className="text-xl font-bold text-white">
                   Infra-DSC
                 </h3>
-                <p className="text-xs text-gray-400">AI Infrastructure Analysis</p>
+                <p className="text-xs text-gray-400">AIで道路損傷の検出</p>
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
-              Advanced AI-powered infrastructure damage detection and analysis platform for safer roads and better maintenance.
+              私たちは、AIを活用してインフラの安全性と効率性を向上させることを目指しています。最新の技術で、より良い未来を築きましょう。
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-white">Quick Links</h4>
+            <h4 className="text-lg font-semibold text-white">クイックリンク</h4>
             <div className="grid grid-cols-2 gap-2">
               <a href="/" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                Home
+                ホーム
               </a>
               <a href="/results" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                Results
+                すべての検出結果
               </a>
               <a href="/about" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                About
+                私たちについて
               </a>
               <a href="/contact" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                Contact
+                お問い合わせ
               </a>
             </div>
           </div>
 
           {/* Contact & Social */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-white">Connect</h4>
+            <h4 className="text-lg font-semibold text-white">連絡先</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-gray-400 text-sm">
                 <div className="w-6 h-6 bg-gray-800 rounded-lg flex items-center justify-center">
@@ -80,7 +80,7 @@ export const Footer = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <span>contact@infra-dsc.com</span>
+                <span>contact@infra-dsc.net</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-400 text-sm">
                 <div className="w-6 h-6 bg-gray-800 rounded-lg flex items-center justify-center">
@@ -150,13 +150,6 @@ export const Footer = () => {
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             <div className="text-gray-400 text-sm text-center md:text-left">
               &copy; {new Date().getFullYear()} Infra-DSC | ZhangLab. All Rights Reserved.
-            </div>
-            <div className="flex items-center space-x-6 text-sm text-gray-400">
-              <a href="#" className="hover:text-white transition-colors duration-300">Privacy Policy</a>
-              <span className="text-gray-600">•</span>
-              <a href="#" className="hover:text-white transition-colors duration-300">Terms of Service</a>
-              <span className="text-gray-600">•</span>
-              <a href="/contact" className="hover:text-white transition-colors duration-300">Support</a>
             </div>
           </div>
         </div>

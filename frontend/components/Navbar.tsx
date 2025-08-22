@@ -39,33 +39,35 @@ const CloseIcon = () => (
 
 // Component for your custom SVG logo
 const CustomLogo = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-10 w-10 text-white"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M8 2l-4 20"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M16 2l4 20"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="3"
-      d="M12 2v20"
-      strokeDasharray="4 4"
-    />
-  </svg>
+  <div className="w-15 h-15 bg-white rounded-xl flex items-center justify-center">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-8 w-8 text-black"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M8 2l-4 20"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M16 2l4 20"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="3"
+        d="M12 2v20"
+        strokeDasharray="4 4"
+      />
+    </svg>
+  </div>
 );
 
 export const Navbar = () => {
@@ -76,10 +78,10 @@ export const Navbar = () => {
   };
 
   const menuItems = [
-    { name: "Home", href: "/" },
-    { name: "Results", href: "/results" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
+    { name: "ホーム", href: "/" },
+    { name: "すべての検出結果", href: "/results" },
+    { name: "私たちについて", href: "/about" },
+    { name: "お問い合わせ", href: "/contact" },
   ];
 
   return (
@@ -89,16 +91,14 @@ export const Navbar = () => {
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="relative">
-                <div className="bg-black rounded-full p-2 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <CustomLogo />
-                </div>
+                <CustomLogo />
               </div>
               <div>
                 <span className="text-2xl font-bold text-black group-hover:text-gray-700 transition-all duration-300">
                   Infra-DSC
                 </span>
                 <p className="text-xs text-gray-600 group-hover:text-gray-500 transition-colors duration-300">
-                  AI Infrastructure Analysis
+                  AIで道路損傷の検出
                 </p>
               </div>
             </Link>
@@ -128,7 +128,7 @@ export const Navbar = () => {
               aria-controls="mobile-menu"
               aria-expanded="false"
             >
-              <span className="sr-only">Open main menu</span>
+              <span className="sr-only">メインメニューを開く</span>
               <div className="relative w-6 h-6">
                 {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
               </div>

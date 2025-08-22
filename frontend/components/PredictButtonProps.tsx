@@ -57,7 +57,7 @@ export const PredictButton: React.FC<PredictButtonProps> = ({ onClick, isLoading
 			</svg>
 		)}
 		<span className="relative">
-			{isLoading ? "Analyzing..." : "Start Analysis"}
+			{isLoading ? "検出中..." : "検出開始"}
 		</span>
 	</button>
 );

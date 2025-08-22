@@ -84,16 +84,16 @@ export const Dropzone: React.FC<DropzoneProps> = ({ processFiles, isDragging, se
 					</svg>
 				</div>
 				<h3 className="text-xl font-semibold text-black mb-3 group-hover:text-gray-700 transition-colors duration-300">
-					{isDragging ? 'Drop your images here' : 'Upload Infrastructure Images'}
+					{isDragging ? 'こちらでドラッグ＆ドロップ' : '画像をアプロード'}
 				</h3>
 				<p className="text-gray-600 mb-4 leading-relaxed">
-					Drag & drop your files here, or{' '}
+					ドラッグ & ドロップで画像をアップロードするか、{' '}
 					<span className="text-black font-semibold group-hover:text-gray-700 transition-colors duration-300">
-						click to browse
+						クリックして参照
 					</span>
 				</p>
 				<p className="text-sm text-gray-500">
-					Supports: JPG, PNG, GIF • Multiple files allowed
+					サポートファイル: JPEG, PNG, GIF
 				</p>
 			</div>
 		</div>

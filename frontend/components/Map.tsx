@@ -205,11 +205,10 @@ const MapDisplayComponent: React.FC<MapDisplayProps> = ({
           </div>
           <div>
             <h3 className="text-lg font-semibold text-black">
-              Photo Locations
+              劣化位置データ
             </h3>
             <p className="text-sm text-gray-600">
-              {filesWithCoords.length} photo
-              {filesWithCoords.length !== 1 ? "s" : ""} with GPS data
+              {filesWithCoords.length} 枚の画像にGPSデータがあります
             </p>
           </div>
         </div>
