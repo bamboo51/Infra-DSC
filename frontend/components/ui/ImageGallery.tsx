@@ -12,7 +12,7 @@ export const ImageGallery: React.FC<ImageGalleryInterface> = ({ files, results, 
 	if (files.length === 0) return null;
 	return (
     <div className="w-full mt-6">
-      <h3 className="text-lg font-semibold mb-2 text-black">Selected Images</h3>
+      <h3 className="text-lg font-semibold mb-2 text-black">選択された画像</h3>
       <div className="flex flex-wrap gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
         {files.map((file, index) => (
           <div key={file.file.name + index} className="relative">

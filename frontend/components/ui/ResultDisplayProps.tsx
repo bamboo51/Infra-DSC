@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, AlertCircle, Maximize2, Download } from 'lucide-react';
+import React from "react";
+import { Image, AlertCircle, Maximize2, Download } from "lucide-react";
 
 interface ResultDisplayProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -22,8 +22,8 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
   const handleDownload = () => {
     const canvas = canvasRef.current;
     if (canvas) {
-      const link = document.createElement('a');
-      link.download = 'analysis-result.png';
+      const link = document.createElement("a");
+      link.download = "analysis-result.png";
       link.href = canvas.toDataURL();
       link.click();
     }
@@ -36,15 +36,19 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
             <Image className="w-8 h-8 text-gray-500" />
           </div>
-          <h3 className="text-lg font-semibold text-black mb-2">画像が選択されていません</h3>
-          <p className="text-gray-600">ギャラリーから画像を選択して、検出結果を表示します。</p>
+          <h3 className="text-lg font-semibold text-black mb-2">
+            画像が選択されていません
+          </h3>
+          <p className="text-gray-600">
+            ギャラリーから画像を選択して、検出結果を表示します。
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-gray-50">
       {/* Enhanced Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
@@ -54,10 +58,12 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
             </div>
             <div>
               <h3 className="text-lg font-semibold text-black">検出結果</h3>
-              <p className="text-sm text-gray-600">AIによって処理された画像と検出結果</p>
+              <p className="text-sm text-gray-600">
+                AIによって処理された画像と検出結果
+              </p>
             </div>
           </div>
-          
+
           {/* Action buttons */}
           <div className="flex items-center space-x-2">
             <button
@@ -90,24 +96,16 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
 
       {/* Canvas Container */}
       <div className="p-6">
-        <div className="relative bg-gray-100 rounded-lg overflow-hidden border border-gray-300">
-          {/* Canvas wrapper with aspect ratio preservation */}
-          <div className="relative min-h-[300px] flex items-center justify-center">
-            <canvas 
-              ref={canvasRef} 
-              className="max-w-full max-h-[500px] w-auto h-auto rounded-lg shadow-lg"
-              style={{ 
-                filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))',
-                imageRendering: 'crisp-edges'
-              }}
-            />
-          </div>
-
-          {/* Corner decorations */}
-          <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-purple-400/50"></div>
-          <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-purple-400/50"></div>
-          <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-purple-400/50"></div>
-          <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-purple-400/50"></div>
+        {/* Canvas wrapper with aspect ratio preservation */}
+        <div className="relative min-h-[300px] flex items-center justify-center">
+          <canvas
+            ref={canvasRef}
+            className="max-w-full max-h-[800px] w-auto h-auto rounded-lg shadow-lg"
+            style={{
+              filter: "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))",
+              imageRendering: "crisp-edges",
+            }}
+          />
         </div>
       </div>
     </div>
