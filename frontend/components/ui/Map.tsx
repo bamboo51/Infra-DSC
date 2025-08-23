@@ -7,7 +7,7 @@ import { PhotoMetadata } from "@/types/api";
 import { MapPin, ZoomIn, ZoomOut } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
-// Fix for default Leaflet icon issue
+// eslint-disable-next-line
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
 // Types

@@ -1,5 +1,6 @@
 // components/results/EmptyState.tsx
 import React from 'react';
+import Link from 'next/link';
 import { Upload } from 'lucide-react';
 
 export const EmptyState: React.FC = () => {
@@ -15,13 +16,13 @@ export const EmptyState: React.FC = () => {
         <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-4 sm:mb-6">
           アップロードして画像を処理すると、ここに分析済みの画像が表示されます。
         </p>
-        <a
+        <Link
           href="/"
           className="inline-flex items-center px-5 py-3 sm:px-6 sm:py-3 bg-black hover:bg-gray-800 text-white font-semibold rounded-xl sm:rounded-2xl transition-all duration-300 transform active:scale-95 shadow-lg hover:shadow-xl text-sm sm:text-base"
         >
           <Upload className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
           アップロードされた画像
-        </a>
+        </Link>
       </div>
     </div>
   );

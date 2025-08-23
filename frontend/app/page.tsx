@@ -1,23 +1,13 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useMemo } from "react";
 
 import Hero from "@/components/ui/Hero";
 import BackgroundBlobs from "@/components/ui/BackgroundBlobs";
 import { crackDetection } from "@/hooks/crackDetection";
-import { MapDisplayProps } from "@/components/ui/Map";
 import { heroData } from "@/data/about";
 import { ResultsSection } from "@/components/home/ResultsSselection";
 import { UploadSection } from "@/components/home/UploadSelection";
-
-const DynamicMapDisplay = dynamic<MapDisplayProps>(
-  () => import("@/components/ui/Map").then((mod) => mod.MapDisplay),
-  {
-    ssr: false,
-    loading: () => <p className="text-center mt-8">Loading map...</p>,
-  }
-);
 
 export default function App() {
   const {

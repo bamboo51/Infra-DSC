@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const Footer = () => {
   return (
     <footer className="bg-black border-t border-gray-800">
@@ -51,22 +53,22 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-white">クイックリンク</h4>
             <div className="grid grid-cols-2 gap-2">
-              <a href="/" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
+              <Link href="/" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 ホーム
-              </a>
-              <a href="/results" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
+              </Link>
+              <Link href="/results" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 すべての検出結果
-              </a>
-              <a href="/about" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
+              </Link>
+              <Link href="/about" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 私たちについて
-              </a>
-              <a href="/contact" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
+              </Link>
+              <Link href="/contact" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group">
                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 お問い合わせ
-              </a>
+              </Link>
             </div>
           </div>
 
