@@ -1,21 +1,13 @@
 "use client";
 
-import { crackDetection } from "@/hooks/crackDetection";
-import { PredictButton } from "@/components/PredictButtonProps";
-import { ResultDisplay } from "@/components/ResultDisplayProps";
-import { Dropzone } from "@/components/DropZone";
-import { ImageGallery } from "@/components/ImageGallery";
-import { MapDisplayProps } from "@/components/Map";
-import dynamic from "next/dynamic";
 import { useMemo } from "react";
 
-const DynamicMapDisplay = dynamic<MapDisplayProps>(
-  () => import("@/components/Map").then((mod) => mod.MapDisplay),
-  {
-    ssr: false,
-    loading: () => <p className="text-center mt-8">Loading map...</p>,
-  }
-);
+import Hero from "@/components/ui/Hero";
+import BackgroundBlobs from "@/components/ui/BackgroundBlobs";
+import { crackDetection } from "@/hooks/crackDetection";
+import { heroData } from "@/data/about";
+import { ResultsSection } from "@/components/home/ResultsSselection";
+import { UploadSection } from "@/components/home/UploadSelection";
 
 export default function App() {
   const {
@@ -46,45 +38,36 @@ export default function App() {
   }, [selectedFiles]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-6 sm:p-12 bg-gray-900 text-white font-sans">
-      <div className="w-full max-w-5xl">
-        <header className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">
-            Infra-DSC Crack Detection
-          </h1>
-        </header>
+    <main className="min-h-screen bg-white text-black relative overflow-hidden">
+      <BackgroundBlobs />
 
-        <section className="bg-gray-800 p-6 sm:p-8 rounded-xl shadow-2xl flex flex-col items-center">
-          <Dropzone
+      <div className="container mx-auto px-6 py-12 relative z-10 max-w-4xl">
+        <Hero {...heroData} />
+
+        <div className="max-w-7xl mx-auto">
+          <UploadSection
             processFiles={processFiles}
             isDragging={isDragging}
             setIsDragging={setIsDragging}
-            disabled={isLoading}
-          />
-          <PredictButton
-            onClick={handlePredictAll}
             isLoading={isLoading}
-            disabled={activeFileIndex === null || allPredicted}
-          />
-          <ImageGallery
-            files={selectedFiles}
+            handlePredictAll={handlePredictAll}
+            selectedFiles={selectedFiles}
             results={results}
-            activeIndex={activeFileIndex}
-            onSelect={setActiveFileIndex}
+            activeFileIndex={activeFileIndex}
+            setActiveFileIndex={setActiveFileIndex}
+            allPredicted={allPredicted}
           />
-        </section>
 
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <ResultDisplay
-            canvasRef={canvasRef}
-            hasActiveImage={activeFileIndex !== null}
-            error={error}
-          />
-          <DynamicMapDisplay
-            files={filesForMap}
-            activeIndex={activeFileIndex}
-            onActiveIndexChange={setActiveFileIndex}
-          />
+          {/* Conditional rendering is now much cleaner */}
+          {(selectedFiles.length > 0 || activeFileIndex !== null) && (
+            <ResultsSection
+              canvasRef={canvasRef}
+              activeFileIndex={activeFileIndex}
+              error={error}
+              filesForMap={filesForMap}
+              setActiveFileIndex={setActiveFileIndex}
+            />
+          )}
         </div>
       </div>
     </main>
