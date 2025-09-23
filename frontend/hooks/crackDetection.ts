@@ -1,7 +1,7 @@
 import { ApiService } from "@/services/mlService";
 import { ApiResponse, SelectedFile } from "@/types/api";
 import { CanvasDrawer } from "@/utils/canvasDrawer";
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 import EXIF from "exif-js";
 import { Coords } from "@/types/coords";
 
@@ -13,15 +13,16 @@ export const crackDetection = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const activeFile = activeFileIndex !== null ? selectedFiles[activeFileIndex] : null;
+  const activeFile =
+    activeFileIndex !== null ? selectedFiles[activeFileIndex] : null;
 
   const getExifData = (file: File): Promise<Coords | null> => {
     return new Promise((resolve) => {
-      EXIF.getData(file as any, function(this: any){
+      EXIF.getData(file as any, function (this: any) {
         const latitude = EXIF.getTag(this, "GPSLatitude");
         const longitude = EXIF.getTag(this, "GPSLongitude");
 
-        if(Array.isArray(latitude) && Array.isArray(longitude)){
+        if (Array.isArray(latitude) && Array.isArray(longitude)) {
           const latRef = EXIF.getTag(this, "GPSLatitudeRef") || "N";
           const lonRef = EXIF.getTag(this, "GPSLongitudeRef") || "E";
 
@@ -37,31 +38,33 @@ export const crackDetection = () => {
         }
       });
     });
-  }
+  };
 
   const processFiles = (files: FileList | null) => {
     if (files && files.length > 0) {
       setError("");
-      const filesArray = Array.from(files).filter(file => file.type.startsWith("image/"));
+      const filesArray = Array.from(files).filter((file) =>
+        file.type.startsWith("image/")
+      );
 
       if (filesArray.length === 0) {
         setError("No valid image files found.");
         return;
       }
 
-      const filePromises = filesArray.map(async file => {
+      const filePromises = filesArray.map(async (file) => {
         const coords = await getExifData(file);
-        console.log(coords);
-        return new Promise<SelectedFile>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            resolve({ file, preview: reader.result as string, coords, crack_ratio: 0 });
-          };
-          reader.readAsDataURL(file);
-        });
+        const compressedFile = await compressImage(file);
+        const previewUrl = URL.createObjectURL(compressedFile);
+        return {
+          file: compressedFile,
+          preview: previewUrl,
+          coords,
+          crack_ratio: 0
+        }
       });
 
-      Promise.all(filePromises).then(newFiles => {
+      Promise.all(filePromises).then((newFiles) => {
         const updatedFiles = [...selectedFiles, ...newFiles];
         setSelectedFiles(updatedFiles);
         if (activeFileIndex === null && updatedFiles.length > 0) {
@@ -70,7 +73,6 @@ export const crackDetection = () => {
       });
     }
   };
-
 
   /**
    * Draw the results on the canvas.
@@ -92,39 +94,38 @@ export const crackDetection = () => {
       return;
     }
 
-    const promises = predictionsToRun.map(({ file, index }) =>
-      ApiService.predict(file.file, file.coords).then(response => ({ index, response }))
-    );
-
-    const settledResults = await Promise.allSettled(promises);
-
     const newResults: Record<number, ApiResponse> = {};
-    settledResults.forEach(result => {
-      if (result.status === 'fulfilled') {
-        newResults[result.value.index] = result.value.response;
-      } else {
-        console.error("A prediction failed:", result.reason);
-        setError("One or more predictions failed. Check the console.");
+    for (const { file, index } of predictionsToRun) {
+      try {
+        const response = await ApiService.predict(file.file, file.coords);
+        newResults[index] = response;
+      } catch (err) {
+        console.error("Prediciton failed for file", index, err);
+        setError("One or more predictions failed.");
       }
-    });
+    }
 
-    setResults(prev => ({ ...prev, ...newResults }));
+    setResults((prev) => ({ ...prev, ...newResults }));
     setIsLoading(false);
-  }
+  };
 
   useEffect(() => {
     const drawCanvas = async () => {
       if (!activeFile || !canvasRef.current) return;
 
-      const ctx = canvasRef.current.getContext('2d');
+      const ctx = canvasRef.current.getContext("2d");
       if (!ctx) return;
 
-      const resultForActiveFile = activeFileIndex !== null ? results[activeFileIndex] : null;
+      const resultForActiveFile =
+        activeFileIndex !== null ? results[activeFileIndex] : null;
 
       await CanvasDrawer.drawImage(ctx, activeFile.preview);
 
       if (resultForActiveFile) {
-        await CanvasDrawer.drawSegmentationMask(ctx, resultForActiveFile.segmentation);
+        await CanvasDrawer.drawSegmentationMask(
+          ctx,
+          resultForActiveFile.segmentation
+        );
         CanvasDrawer.drawDetectionBoxes(ctx, resultForActiveFile.detection);
         CanvasDrawer.drawDamageRatio(ctx, resultForActiveFile.crack_ratio);
       }
@@ -133,7 +134,7 @@ export const crackDetection = () => {
     drawCanvas();
   }, [activeFile, activeFileIndex, results]);
 
-return {
+  return {
     selectedFiles,
     activeFileIndex,
     setActiveFileIndex,
@@ -146,4 +147,39 @@ return {
     processFiles,
     handlePredictAll,
   };
-}
+};
+
+/* helper for compress the file */
+const compressImage = (file: File, maxWidth = 1280, maxHeight = 1280, quality = 0.8): Promise<File> => {
+  return new Promise((resolve)=>{
+    const img = new Image();
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    img.onload = () => {
+      let { width, height } = img;
+
+      if(width>maxWidth || height > maxHeight){
+        const ratio = Math.min(maxHeight/height, maxWidth/width);
+        width = width * ratio;
+        height = height * ratio;
+      }
+      canvas.width = width;
+      canvas.height = height;
+      ctx?.drawImage(img, 0,0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if(blob){
+            const compressedFile = new File([blob], file.name, {type: "image/jpg"});
+            resolve(compressedFile);
+          }
+        },
+        "image/jpeg",
+        quality
+      );
+    };
+
+    img.src = URL.createObjectURL(file);
+  });
+};
