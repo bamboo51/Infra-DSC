@@ -179,8 +179,6 @@ async def predict(
             os.remove(thumbnail_path)
             logger.info(f"Removed thumbnail at {thumbnail_path} due to error during save.")
         # Clean up file if it was created
-        if 'file_path' in locals() and os.path.exists(file_path):
-            os.remove(file_path)
         raise HTTPException(status_code=500, detail=f"Failed to save photo: {str(e)}")
     
     # perform model inference
