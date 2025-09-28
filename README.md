@@ -11,3 +11,9 @@ python manage.py runserver 0.0.0.0:8000
 cd frontend
 npm run dev
 ```
+
+# How to deal with FastAPI and Alembic
+```bash
+alembic revision --autogenerate -m "init"
+alembic upgrade head
+```
