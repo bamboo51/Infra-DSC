@@ -270,3 +270,4 @@ Thumbs.db
 
 # photo database
 /backend/media/*
+/backend-fastapi/media/*
