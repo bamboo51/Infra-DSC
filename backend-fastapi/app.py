@@ -165,7 +165,7 @@ async def predict(
         db.commit()
         db.refresh(photo_instance)
         
-        print(f"Created new photo with ID: {photo_instance.id}")
+        logger.info(f"Created new photo with ID: {photo_instance.id}")
         
     except Exception as e:
         logger.error(f"Failed to save photo: {str(e)}")
