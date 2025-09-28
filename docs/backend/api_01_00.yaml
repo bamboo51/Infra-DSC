@@ -48,7 +48,7 @@ paths:
                   description: Optional longitude coordinate
       responses:
         "200":
-          description: Exisiting image found, results returned
+          description: Existing image found, results returned
           content:
             application/json:
               schema:
