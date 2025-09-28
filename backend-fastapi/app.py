@@ -16,7 +16,6 @@ import uuid
 from sqlalchemy.orm import Session
 from database import get_db
 from models import Photo, Detection as DetectionModel, Segmentation as SegmentationModel
-import datetime
 import os
 
 # logging
