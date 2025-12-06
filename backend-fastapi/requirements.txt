@@ -72,6 +72,6 @@ typing-inspection==0.4.1
 typing_extensions==4.15.0
 ultralytics==8.3.203
 ultralytics-thop==2.0.17
-urllib3==2.5.0
+urllib3==2.6.0
 uvicorn==0.37.0
 wheel==0.45.1
