@@ -1,0 +1,213 @@
+openapi: 3.1.0
+info:
+  title: YOLO Crack Detection API
+  description: |
+    AI-powered road damage detection and segmentation API using YOLOv11 models.
+    This API analyzes images to detect and segment road damages, i.e. cracks, potholes,
+    providing bounding boxes, segmentation masks, and crack rations.
+
+    Features:
+    - Crack detection
+    - Segmentation with colored masks
+    - Duplicate image detection via perceptual hashing
+    - GPS coordinate support for location tracking
+    - Crack ratio calculation
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+- url: http://localhost:8000/api
+  description: Development server
+
+paths:
+  /predict:
+    post:
+      summary: Upload an image for detection and segmentation
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Image file to be analyzed
+                latitude:
+                  type: number
+                  format: float
+                  description: Optional latitude coordinate
+                longitude:
+                  type: number
+                  format: float
+                  description: Optional longitude coordinate
+      responses:
+        "200":
+          description: Existing image found, results returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detection:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Detection"
+                  segmentation:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Segmentation"
+                  crack_ratio:
+                    type: number
+                    format: float
+        "201":
+          description: New image analyzed and results created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detection:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Detection"
+                  segmentation:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Segmentation"
+      
+  /photos:
+    get:
+      summary: Get a list of uploaded photos
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            maximum: 100
+      responses:
+        "200":
+          description: A paginated list of photos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  next:
+                    type: ["string", "null"]
+                    format: uri
+                  previous:
+                    type: ["string", "null"]
+                    format: uri
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PhotoSummary"
+
+  /photos/{id}:
+    get:
+      summary: Get details of a specific photo by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Photo details with detections and segmentations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoDetails"
+        "404":
+          description: Photo not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not found.
+
+components:
+  schemas:
+    Detection:
+      type: object
+      properties:
+        box_x1:
+          type: integer
+        box_y1:
+          type: integer
+        box_x2:
+          type: integer
+        box_y2:
+          type: integer
+        confidence:
+          type: number
+          format: float
+          maximum: 1.0
+          minimum: 0.0
+        class_name:
+          type: string
+    
+    Segmentation:
+      type: object
+      properties:
+        mask_uri:
+          type: string
+          description: Base64-encoding PNG mask
+        confidence:
+          type: number
+          format: float
+          maximum: 1.0
+          minimum: 0.0
+        class_name:
+          type: string
+
+    PhotoSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        image:
+          type: string
+          format: uri
+        uploaded_at:
+          type: string
+          format: date-time
+    
+    PhotoDetails:
+      allOf:
+        - $ref: "#/components/schemas/PhotoSummary"
+        - type: object
+          properties:
+            detections:
+              type: array
+              items:
+                $ref: "#/components/schemas/Detection"
+            segmentations:
+              type: array
+              items:
+                $ref: "#/components/schemas/Segmentation"
+            crack_ratio:
+              type: number
+              format: float
+        
+
+
+
