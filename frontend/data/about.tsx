@@ -47,7 +47,7 @@ export const backgroundSection: BackgroundSectionData = {
     {
       title: "The Challenge",
       icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>,
-      content: ["普段使っている道路がデコボコしていることが気になったことはありませんか？", "日本ではこうしたインフラの老朽化が社会課題となっています。路面状態の把握は管理者による目視で行われることが多く，非効率的です。"],
+      content: ["普段使っている道路がデコボコしていることが気になったことはありませんか？", "日本ではこうしたインフラの老朽化が社会課題となっています。路面状態の把握は管理者による目視で行われることが多く，調査が届いていないところがあります。"],
     },
     {
       title: "Our Solution",
