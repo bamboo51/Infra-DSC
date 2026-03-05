@@ -99,7 +99,7 @@ export const contactSectionData: ContactSectionData = {
           href="tel:03-1234-5678"
           className="text-gray-600 hover:text-black transition-colors duration-200 text-sm sm:text-base"
         >
-          022-351-5537
+          022-395-6129
         </a>
       ),
     },
