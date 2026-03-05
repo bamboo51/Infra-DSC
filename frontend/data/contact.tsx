@@ -69,10 +69,10 @@ export const contactSectionData: ContactSectionData = {
       ),
       content: (
         <a
-          href="mailto:contact@infra-dsc.net"
+          href="mailto:a2511519@sendai-nct.jp"
           className="text-gray-600 hover:text-black transition-colors duration-200 text-sm sm:text-base break-all"
         >
-          contact@infra-dsc.net
+          a2511519@sendai-nct.jp
         </a>
       ),
     },
@@ -99,7 +99,7 @@ export const contactSectionData: ContactSectionData = {
           href="tel:03-1234-5678"
           className="text-gray-600 hover:text-black transition-colors duration-200 text-sm sm:text-base"
         >
-          03-1234-5678
+          022-351-5537
         </a>
       ),
     },
