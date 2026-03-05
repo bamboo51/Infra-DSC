@@ -70,9 +70,9 @@ export const journeySection: JourneySectionData = {
     </svg>
   ),
   timeline: [
-    { year: "2023", title: "Road Damage Scanner (RDS)", points: ["道路劣化の問題に着目", "現行の目視点検の限界と課題を調査", "AI技術によるBounding Box形式の劣化検出", "🏆 DCON 2023 全国大会 本選出場"] },
-    { year: "2024", title: "Infra-DSC 1.0", points: ["RDSをさらに改良・発展", "AI技術によるBounding Box形式に加えてSegmentationと割れ率の計算の劣化検出", "AWS上での実用化", "東北社会課題解決型クリエーター発掘・育成プログラム SICA 2024 採択"] },
-    { year: "2025", title: "New Infra-DSC", points: ["Infra-DSC 1.0に基づいて改良・発展", "既存のシステムをモダン化"], isCurrent: true },
+    { year: "2023", title: "Road Damage Scanner (RDS)", points: ["道路劣化の問題に着目", "現行の目視点検の限界と課題を調査", "AI技術によるBounding Box形式の劣化検出", "DCON 2023 全国大会 本選出場"] },
+    { year: "2024", title: "Infra-DSC 1.0", points: ["RDSをさらに改良・発展", "AI技術によるBounding Box形式に加えてSegmentationと割れ率の計算の劣化検出の試み（20枚程度の画像で学習）", "AWS上での実用化", "東北社会課題解決型クリエーター発掘・育成プログラム SICA 2024 採択"] },
+    { year: "2025", title: "New Infra-DSC", points: ["Infra-DSC 1.0に基づいて改良・発展", "既存のシステムをモダン化","300枚程度の手動アノテーションマスクを使用"], isCurrent: true },
   ] as TimelineItemData[],
 };
 

@@ -28,9 +28,11 @@ export default function About() {
         </TitledSection>
 
         {/* Development History Section */}
+        {/*
         <TitledSection title={journeySection.title} icon={journeySection.icon}>
           <Timeline items={journeySection.timeline} />
         </TitledSection>
+        */}
 
         {/* Call to Action */}
         <CallToAction {...ctaSection} />
