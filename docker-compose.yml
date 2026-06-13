@@ -1,0 +1,25 @@
+services:
+  # db will be implemented later
+  backend:
+    build:
+      context: ./backend
+      args:
+        HF_WEIGHTS_REPO: Phongwit/YOLO_RDD2022
+    environment:
+      DATABASE_URL: null # will be fixed after migrate to postgresql
+    ports:
+      - "8000:8000"
+    volumes: ["./backend/media:/app/media"]
+    depends_on: [db]
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+volumes:
+  pgdata:
