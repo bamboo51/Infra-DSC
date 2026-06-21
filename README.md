@@ -1,12 +1,9 @@
 # Infra-DSC
 
 > AI-powered road damage detection and mapping — upload a photo, get cracks and potholes detected and segmented automatically, see it all on a map.
+> 
 
-<!-- TODO: add a demo GIF or screenshot here, e.g. -->
-[demo](figure/demo.mp4)
-
-<!-- TODO: once CI is set up, add badges, e.g. -->
-<!-- ![CI](https://github.com/<you>/Infra-DSC/actions/workflows/ci.yml/badge.svg) -->
+https://github.com/user-attachments/assets/6f9c2a20-f85c-44ae-8aae-fcfa993d56f5
 
 ## Overview
 
