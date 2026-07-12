@@ -30,6 +30,7 @@ a FastAPI backend serving inference results from a relational database.
 
 ### Reward
 - 🏆 Infrastructure Management Contest 2025: Special Jury Prize
+  - Check here: [Infratechcon Official Page, ZhangLab team](https://infratechcon.com/result), [Sendai KOSEN page](https://www.sendai-nct.ac.jp/20260326-2/)
 
 ## Features
 
