@@ -5,6 +5,18 @@
 
 https://github.com/user-attachments/assets/6f9c2a20-f85c-44ae-8aae-fcfa993d56f5
 
+## Roadmap
+### Web Application Base
+- [ ] Automated test suite + CI
+- [ ] PostgreSQL migration
+- [ ] Dockerized dev environment
+- [ ] User accounts / authentication
+- [ ] Points / gamification system
+### Local Application Base
+- [ ] Export Next.js to Tauri
+- [ ] Use sqlite database instead of server-based database
+- [ ] Export python backend to PyInstaller
+
 ## Overview
 
 Infra-DSC analyzes road photos to detect and segment surface damage (cracks,
@@ -92,14 +104,6 @@ Infra-DSC/
     ├── hooks/                # data-fetching + canvas-drawing hooks
     └── services/              # API client
 ```
-
-## Roadmap
-
-- [ ] Automated test suite + CI
-- [ ] PostgreSQL migration
-- [ ] Dockerized dev environment
-- [ ] User accounts / authentication
-- [ ] Points / gamification system
 
 ## Acknowledgments
 
