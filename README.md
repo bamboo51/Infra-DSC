@@ -28,6 +28,9 @@ quantifying the damaged surface area.
 Built as a full-stack system: a Next.js frontend for upload/visualization and
 a FastAPI backend serving inference results from a relational database.
 
+### Reward
+- 🏆 Infrastructure Management Contest 2025: Special Jury Prize
+
 ## Features
 
 - **Dual-model inference** — bounding-box detection + pixel-level segmentation
