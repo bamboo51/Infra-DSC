@@ -77,7 +77,7 @@ Then visit http://localhost:3000
 Full interactive docs available at /docs (Swagger UI) once the backend is running.
 
 ## Project Structure
-
+```text
 Infra-DSC/
 ├── backend/
 │   ├── app.py          # FastAPI app, routes
@@ -91,6 +91,7 @@ Infra-DSC/
     ├── components/          # UI components
     ├── hooks/                # data-fetching + canvas-drawing hooks
     └── services/              # API client
+```
 
 ## Roadmap
 
